@@ -82,7 +82,7 @@ export function TranscriptPanel() {
     // Auto-navigate book search + select verse for preview/live
     // Handle direct, contextual (reading mode), and high-confidence quotation matches
     const directHit = detections.find(
-      (d) => d.source === "direct" || d.source === "contextual" || (d.source === "quotation" && d.auto_queued)
+      (d) => d.source === "direct" || (d.source as string) === "contextual" || ((d.source as string) === "quotation" && d.auto_queued)
     )
     if (directHit && directHit.book_number > 0) {
       // Select verse immediately so preview/live panels update

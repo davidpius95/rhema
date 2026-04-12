@@ -1,9 +1,6 @@
 import type { Step } from "react-joyride"
 
-const STEP_DEFAULTS = {
-  disableBeacon: true,
-  skipBeacon: true,
-} as const satisfies Partial<Step>
+const STEP_DEFAULTS = {} as const satisfies Partial<Step>
 
 export const TUTORIAL_STEPS: Step[] = [
   {

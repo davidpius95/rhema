@@ -558,8 +558,8 @@ interface CommandLogEntry {
 }
 
 function RemoteControlSection() {
-  const [oscEnabled, setOscEnabled] = useState(false)
-  const [httpEnabled, setHttpEnabled] = useState(false)
+  const [, setOscEnabled] = useState(false)
+  const [, setHttpEnabled] = useState(false)
   const [oscPort, setOscPort] = useState("8000")
   const [httpPort, setHttpPort] = useState("8080")
   const [oscStatus, setOscStatus] = useState<RemoteStatus>({ running: false, port: null })
@@ -924,7 +924,7 @@ export function SettingsDialog() {
                       <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton
                           isActive={item.id === activeSection}
-                          onClick={() => setActiveSection(item.id)}
+                          onClick={() => setActiveSection(item.id as any)}
                         >
                           {item.icon}
                           <span>{item.name}</span>
