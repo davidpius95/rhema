@@ -93,12 +93,20 @@ pub fn run() {
                 log::warn!("Bible database not found at {}", db_path.display());
             }
 
-            // Try to load ONNX embedding model and pre-computed verse index
             // Prefer INT8 quantized model (~571MB) over FP32 (~2.4GB)
-            let base_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+            let (models_dir, embeddings_dir) = app.path()
+                .resource_dir()
+                .map(|p| (p.join("models"), p.join("embeddings")))
+                .ok()
+                .filter(|(m, e)| m.exists() && e.exists())
+                .unwrap_or_else(|| {
+                    let base = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+                    (base.join("models"), base.join("embeddings"))
+                });
+
             let model_path = {
-                let int8 = base_dir.join("models/qwen3-embedding-0.6b-int8/model_quantized.onnx");
-                let fp32 = base_dir.join("models/qwen3-embedding-0.6b/model.onnx");
+                let int8 = models_dir.join("qwen3-embedding-0.6b-int8/model_quantized.onnx");
+                let fp32 = models_dir.join("qwen3-embedding-0.6b/model.onnx");
                 if int8.exists() {
                     log::info!("Using INT8 quantized ONNX model");
                     int8
@@ -109,9 +117,9 @@ pub fn run() {
                     fp32
                 }
             };
-            let tokenizer_path = base_dir.join("models/qwen3-embedding-0.6b/tokenizer.json");
-            let embeddings_path = base_dir.join("embeddings/kjv-qwen3-0.6b.bin");
-            let ids_path = base_dir.join("embeddings/kjv-qwen3-0.6b-ids.bin");
+            let tokenizer_path = models_dir.join("qwen3-embedding-0.6b/tokenizer.json");
+            let embeddings_path = embeddings_dir.join("kjv-qwen3-0.6b.bin");
+            let ids_path = embeddings_dir.join("kjv-qwen3-0.6b-ids.bin");
 
             if model_path.exists() && tokenizer_path.exists() {
                 use rhema_detection::semantic::embedder::TextEmbedder;

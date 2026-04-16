@@ -136,12 +136,14 @@ python3 data/precompute-embeddings.py  # Precompute embeddings (GPU or ONNX fall
 ```bash
 bun run tauri dev
 ```
+*Note: In development, the app reads models, embeddings, and databases directly from your project folders (`models/`, `embeddings/`, `data/`).*
 
 ### Build for production
 
 ```bash
 bun run tauri build
 ```
+*Note: For production builds, Tauri bundles the `models/`, `embeddings/`, and `data/rhema.db` directories into the final installer, creating a fully offline, self-contained application. Ensure you have run all `setup:all` or individual download scripts before building, or the installer will crash on startup missing required resources.*
 
 ## Project Structure
 
