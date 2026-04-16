@@ -19,14 +19,7 @@ pub struct Bm25Result {
 
 // ── FTS5 query builders ─────────────────────────────────────────────
 
-/// Clean input: strip non-alphanumeric chars (except apostrophes).
-fn clean_word(w: &str) -> String {
-    w.chars()
-        .filter(|c| c.is_alphanumeric() || *c == '\'')
-        .collect()
-}
-
-/// Tier 1: Exact phrase match — wraps entire input in double quotes.
+/// Exact phrase match — wraps entire input in double quotes.
 /// `"Follow peace with all men"` matches only verses containing that exact sequence.
 fn build_phrase_query(input: &str) -> String {
     let cleaned: String = input
@@ -38,39 +31,6 @@ fn build_phrase_query(input: &str) -> String {
         return String::new();
     }
     format!("\"{trimmed}\"")
-}
-
-/// Tier 2: Implicit AND — all words must be present (FTS5 default behavior).
-/// `Follow peace vessels gold silver` requires every token to appear.
-fn build_and_query(input: &str) -> String {
-    let tokens: Vec<String> = input
-        .split_whitespace()
-        .filter(|w| w.len() >= 2)
-        .map(|w| clean_word(w))
-        .filter(|w| w.len() >= 2)
-        .collect();
-    if tokens.is_empty() {
-        return String::new();
-    }
-    tokens.join(" ")
-}
-
-/// Tier 3: OR — any word match, broadest fallback.
-/// `"Follow" OR "peace" OR "vessels" OR "gold" OR "silver"`
-fn build_or_query(input: &str) -> String {
-    let tokens: Vec<String> = input
-        .split_whitespace()
-        .filter(|w| w.len() >= 2)
-        .map(|w| {
-            let cleaned = clean_word(w);
-            format!("\"{cleaned}\"")
-        })
-        .filter(|t| t.len() > 2)
-        .collect();
-    if tokens.is_empty() {
-        return String::new();
-    }
-    tokens.join(" OR ")
 }
 
 // ── SQL runner ──────────────────────────────────────────────────────
@@ -112,7 +72,7 @@ fn run_fts_query(
     rows.collect::<Result<Vec<_>, _>>().map_err(BibleError::from)
 }
 
-/// Deduplicate results by (book_number, chapter, verse), keeping first occurrence.
+/// Deduplicate results by (`book_number`, chapter, verse), keeping first occurrence.
 fn dedup_results(results: Vec<Bm25Result>, limit: usize) -> Vec<Bm25Result> {
     let mut seen = HashSet::new();
     results
@@ -120,14 +80,6 @@ fn dedup_results(results: Vec<Bm25Result>, limit: usize) -> Vec<Bm25Result> {
         .filter(|r| seen.insert((r.book_number, r.chapter, r.verse)))
         .take(limit)
         .collect()
-}
-
-fn dedup_count(results: &[Bm25Result]) -> usize {
-    let mut seen = HashSet::new();
-    results
-        .iter()
-        .filter(|r| seen.insert((r.book_number, r.chapter, r.verse)))
-        .count()
 }
 
 // ── BibleDb methods ─────────────────────────────────────────────────
@@ -176,10 +128,10 @@ impl BibleDb {
 
     /// Search verses using FTS5 with BM25 ranking across all English translations.
     ///
-    /// Uses a tiered strategy for best accuracy:
-    /// 1. **Phrase match** — exact substring (catches quoted scripture)
-    /// 2. **AND** — all words must be present (catches reworded but complete quotes)
-    /// 3. **OR** — any word matches (broad fallback for partial/paraphrased queries)
+    /// Uses exact phrase matching — catches quoted scripture with high precision.
+    /// AND/OR tiers were removed: they added 200-1300ms for noisy results
+    /// (common words matching random verses). ONNX semantic detection handles
+    /// paraphrase/reworded detection instead.
     ///
     /// Results are deduplicated by verse reference across translations.
     pub fn search_verses_bm25(
@@ -190,34 +142,12 @@ impl BibleDb {
         let conn = self.conn.lock().map_err(|e| BibleError::Internal(e.to_string()))?;
         let fetch_limit = limit * 4;
 
-        // Tier 1: Exact phrase match
         let phrase = build_phrase_query(query);
-        log::info!("[FTS5-BM25] Tier 1 (phrase): {:?}", phrase);
-        let mut all_results = run_fts_query(&conn, &phrase, fetch_limit)?;
-
-        // Tier 2: AND (all words present)
-        if dedup_count(&all_results) < limit {
-            let and_q = build_and_query(query);
-            log::info!("[FTS5-BM25] Tier 2 (AND): {:?}", and_q);
-            all_results.extend(run_fts_query(&conn, &and_q, fetch_limit)?);
-        }
-
-        // Tier 3: OR (any word — broadest)
-        if dedup_count(&all_results) < limit {
-            let or_q = build_or_query(query);
-            log::info!("[FTS5-BM25] Tier 3 (OR): {:?}", or_q);
-            all_results.extend(run_fts_query(&conn, &or_q, fetch_limit)?);
-        }
+        log::info!("[FTS5-BM25] Phrase: {phrase:?}");
+        let all_results = run_fts_query(&conn, &phrase, fetch_limit)?;
 
         let results = dedup_results(all_results, limit);
-
         log::info!("[FTS5-BM25] Found {} unique verses", results.len());
-        for (i, r) in results.iter().enumerate() {
-            log::debug!(
-                "[FTS5-BM25] #{}: {} {}:{} (rank={:.2})",
-                i, r.book_name, r.chapter, r.verse, r.rank
-            );
-        }
         Ok(results)
     }
 
@@ -267,44 +197,5 @@ mod tests {
     #[test]
     fn phrase_query_empty() {
         assert_eq!(build_phrase_query(""), String::new());
-    }
-
-    #[test]
-    fn and_query_joins_words() {
-        assert_eq!(
-            build_and_query("vessels of gold and silver"),
-            "vessels of gold and silver"
-        );
-    }
-
-    #[test]
-    fn and_query_filters_short_words() {
-        assert_eq!(build_and_query("I am a God"), "am God");
-    }
-
-    #[test]
-    fn or_query_builds_correctly() {
-        assert_eq!(
-            build_or_query("vessels gold silver"),
-            "\"vessels\" OR \"gold\" OR \"silver\""
-        );
-    }
-
-    #[test]
-    fn or_query_empty_input() {
-        assert_eq!(build_or_query(""), String::new());
-    }
-
-    #[test]
-    fn or_query_filters_single_char() {
-        assert_eq!(build_or_query("I a"), String::new());
-    }
-
-    #[test]
-    fn or_query_preserves_apostrophes() {
-        assert_eq!(
-            build_or_query("don't can't"),
-            "\"don't\" OR \"can't\""
-        );
     }
 }
