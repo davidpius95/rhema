@@ -47,18 +47,9 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-
-      # On Windows the "staticlib" crate-type (needed only for iOS) forces
-      # Cargo to enable +crt-static, which makes the `cc` crate compile C++
-      # deps like esaxx-rs with /MT (static CRT). Meanwhile cmake-based deps
-      # (whisper-rs-sys) and pre-built binaries (ort-sys) use /MD (dynamic CRT).
-      # Removing "staticlib" from crate-type on Windows prevents the forced
-      # +crt-static so everything consistently links with /MD.
-      - name: Fix Windows CRT linkage
-        if: matrix.platform == 'windows-latest'
-        shell: pwsh
-        run: |
-          (Get-Content src-tauri/Cargo.toml) -replace 'crate-type = \["staticlib", "cdylib", "rlib"\]', 'crate-type = ["cdylib", "rlib"]' | Set-Content src-tauri/Cargo.toml
+          # Cache key includes "v2" to bust stale caches from earlier builds
+          # that had esaxx-rs compiled with /MT before the patch.
+          prefix-key: 'v2-rust'
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0

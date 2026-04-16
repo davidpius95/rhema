@@ -73,3 +73,9 @@ workspace = true
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-global-shortcut = "2"
+
+# Patch esaxx-rs to remove hardcoded .static_crt(true) in build.rs.
+# The upstream crate forces /MT (static CRT) on MSVC which conflicts with
+# whisper-rs-sys (cmake, /MD) and ort-sys (pre-built ONNX, /MD).
+[patch.crates-io]
+esaxx-rs = { path = "patches/esaxx-rs-0.1.10" }
