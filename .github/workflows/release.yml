@@ -48,17 +48,24 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
+      # On Windows the "staticlib" crate-type (needed only for iOS) forces
+      # Cargo to enable +crt-static, which makes the `cc` crate compile C++
+      # deps like esaxx-rs with /MT (static CRT). Meanwhile cmake-based deps
+      # (whisper-rs-sys) and pre-built binaries (ort-sys) use /MD (dynamic CRT).
+      # Removing "staticlib" from crate-type on Windows prevents the forced
+      # +crt-static so everything consistently links with /MD.
+      - name: Fix Windows CRT linkage
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          (Get-Content src-tauri/Cargo.toml) -replace 'crate-type = \["staticlib", "cdylib", "rlib"\]', 'crate-type = ["cdylib", "rlib"]' | Set-Content src-tauri/Cargo.toml
+
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # macOS: whisper.cpp/ggml uses std::filesystem which requires macOS 10.15+
           MACOSX_DEPLOYMENT_TARGET: '11.0'
-          # Windows: ort-sys ships pre-built ONNX Runtime binaries compiled with
-          # dynamic CRT (/MD). We MUST force everything else to also use /MD so
-          # the linker doesn't see MT-vs-MD mismatches. The minus sign in
-          # -crt-static means "use dynamic CRT".
-          RUSTFLAGS: ${{ matrix.platform == 'windows-latest' && '-C target-feature=-crt-static' || '' }}
         with:
           tagName: v__VERSION__
           releaseName: 'Rhema v__VERSION__'
