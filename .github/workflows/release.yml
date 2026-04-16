@@ -33,39 +33,74 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install dependencies
-        run: bun install
-
-      # ── Prepare all runtime resources BEFORE the Rust build ──────────────
-      # These are bundled into the final installer via tauri.conf.json resources.
-      - name: Download Bible source data
-        run: bun run download:bible-data
-
-      - name: Build Bible SQLite database
-        run: bun run build:bible
-
-      - name: Download Whisper model (~394 MB)
-        run: bun run download:whisper
-
-      - name: Download NDI SDK (optional, broadcast feature)
-        run: bun run download:ndi-sdk
-        continue-on-error: true
-
-      - name: Setup Python (for ONNX model export)
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
+      - name: Install Node dependencies
+        run: bun install
+
+      # ── Rust toolchain (needed early for precompute:embeddings cargo binary) ──
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      # macOS Universal Binary requires both arch targets
+      - name: Add macOS Intel target (for Universal Binary)
+        if: matrix.platform == 'macos-latest'
+        run: rustup target add x86_64-apple-darwin
+
+      - name: Install CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+          prefix-key: 'v4-rust'
+
+      # ── Prepare ALL runtime resources BEFORE the Tauri build ─────────────
+      # These are bundled into the final installer via tauri.conf.json resources.
+
+      # Phase 1: Public domain Bible translations (KJV, Spanish, French, Portuguese)
+      - name: Download open-source Bible data
+        run: bun run download:bible-data
+
+      # Phase 2: Copyrighted Bible translations from BibleGateway
+      #   NIV, ESV, NASB, NKJV, NLT, AMP — scraped book-by-book
+      - name: Install Python Bible scraper dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install meaningless
+      - name: Download copyrighted Bible translations (NIV, ESV, NASB, NKJV, NLT, AMP)
+        run: python3 data/download-biblegateway.py
+
+      # Phase 3: Build database with ALL translations
+      - name: Build Bible SQLite database (all translations)
+        run: bun run build:bible
+
+      # Phase 4: Whisper model for local speech-to-text
+      - name: Download Whisper model (~394 MB)
+        run: bun run download:whisper
+
+      # Phase 5: NDI SDK for broadcast
+      - name: Download NDI SDK (optional, broadcast feature)
+        run: bun run download:ndi-sdk
+        continue-on-error: true
+
+      # Phase 6: ONNX embedding model (FP32 + INT8 quantized)
       - name: Download and export ONNX model (~2.4 GB FP32 + ~571 MB INT8)
         run: bun run download:model
 
+      # Phase 7: Export verses to JSON for embedding precomputation
       - name: Export verses for embedding
         run: bun run export:verses
 
+      # Phase 8: Precompute verse embeddings (runs a Rust cargo binary)
       - name: Precompute verse embeddings
         run: bun run precompute:embeddings
 
-      # Ensure all resource directories exist even if optional steps failed
+      # Safety net: ensure all resource directories exist even if optional steps failed
       - name: Ensure resource directories exist
         shell: bash
         run: |
@@ -75,23 +110,9 @@ jobs:
           mkdir -p embeddings
           mkdir -p sdk/ndi
 
-      # ── Rust toolchain + targets ────────────────────────────────────────
-      - name: Install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-
-      # macOS Universal Binary requires both arch targets
-      - name: Add macOS Intel target (for Universal Binary)
-        if: matrix.platform == 'macos-latest'
-        run: rustup target add x86_64-apple-darwin
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-          prefix-key: 'v3-rust'
-
-      # On Windows: strip "staticlib" from crate-type so Cargo doesn't force
-      # +crt-static, which conflicts with ort-sys pre-built /MD binaries.
+      # ── Windows CRT fix ──────────────────────────────────────────────────
+      # Strip "staticlib" from crate-type so Cargo doesn't force +crt-static,
+      # which conflicts with ort-sys pre-built /MD binaries.
       - name: Fix Windows CRT linkage
         if: matrix.platform == 'windows-latest'
         shell: pwsh
@@ -106,7 +127,6 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS: whisper.cpp/ggml requires std::filesystem → macOS 11.0+
           MACOSX_DEPLOYMENT_TARGET: '11.0'
         with:
           tagName: v__VERSION__
@@ -118,8 +138,14 @@ jobs:
             | **macOS** (Apple Silicon + Intel) | `.dmg` | Universal Binary — works on M1/M2/M3 and Intel Macs |
             | **Windows** (x64) | `.msi` | 64-bit installer for Windows 10/11 |
 
+            ### Bundled Resources
+            - **10 Bible translations**: KJV, NIV, ESV, NASB, NKJV, NLT, AMP + Spanish, French, Portuguese
+            - **Whisper large-v3-turbo Q8** — local speech-to-text, no internet required
+            - **Qwen3-0.6B ONNX** — semantic verse detection (FP32 + INT8)
+            - **Pre-computed verse embeddings** — instant semantic search
+            - **NDI SDK** — broadcast output for live production
+
             > **First launch on macOS:** Right-click → Open (app is unsigned).
-            > **Whisper model:** Bundled. Local speech-to-text works out of the box.
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}

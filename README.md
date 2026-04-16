@@ -158,14 +158,14 @@ The CI pipeline automatically downloads and bundles these resources:
 
 | Resource | Size | Purpose |
 |----------|------|---------|
-| `rhema.db` | ~103 MB | Bible database (KJV + cross-references + FTS5 index) |
+| `rhema.db` | ~103 MB | Bible database with **10 translations** (KJV, NIV, ESV, NASB, NKJV, NLT, AMP + Spanish, French, Portuguese), FTS5 full-text search, 340k+ cross-references |
 | `models/whisper/` | ~394 MB | Whisper large-v3-turbo Q8 model for local speech-to-text |
 | `models/qwen3-embedding-0.6b/` | ~2.4 GB | ONNX embedding model (FP32) for semantic verse search |
 | `models/qwen3-embedding-0.6b-int8/` | ~571 MB | INT8 quantized embedding model (preferred on ARM/Apple Silicon) |
 | `sdk/ndi/` | ~2 MB | NDI SDK for broadcast output |
 | `embeddings/` | ~122 MB | Pre-computed verse embeddings for vector search |
 
-> **Note:** The full installer is ~3.5 GB due to the bundled AI models. This ensures all features work offline out of the box with zero setup required.
+> **Note:** The full installer is ~3.5 GB due to the bundled AI models and all Bible translations. This ensures every feature works offline out of the box with zero setup required.
 
 ### macOS First Launch
 
