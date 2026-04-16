@@ -136,14 +136,41 @@ python3 data/precompute-embeddings.py  # Precompute embeddings (GPU or ONNX fall
 ```bash
 bun run tauri dev
 ```
-*Note: In development, the app reads models, embeddings, and databases directly from your project folders (`models/`, `embeddings/`, `data/`).*
+
+In development the app reads resources directly from your working tree (`models/`, `embeddings/`, `data/`). Make sure you have run `bun run setup:all` first.
 
 ### Build for production
 
 ```bash
 bun run tauri build
 ```
-*Note: For production builds, Tauri bundles the `models/`, `embeddings/`, and `data/rhema.db` directories into the final installer, creating a fully offline, self-contained application. Ensure you have run all `setup:all` or individual download scripts before building, or the installer will crash on startup missing required resources.*
+
+### Supported Platforms
+
+| Platform | Architecture | Installer | Notes |
+|----------|-------------|-----------|-------|
+| **macOS** | Universal (Apple Silicon + Intel) | `.dmg` | Single binary for M1/M2/M3/M4 and Intel Macs. Requires macOS 11.0+ |
+| **Windows** | x64 | `.msi` | 64-bit installer for Windows 10/11. Includes WebView2 bootstrapper |
+
+### What Ships in the Installer
+
+The CI pipeline automatically downloads and bundles these resources:
+
+| Resource | Size | Purpose |
+|----------|------|---------|
+| `rhema.db` | ~103 MB | Bible database (KJV + cross-references + FTS5 index) |
+| `models/whisper/` | ~394 MB | Whisper large-v3-turbo Q8 model for local speech-to-text |
+| `sdk/ndi/` | ~2 MB | NDI SDK for broadcast output |
+| `embeddings/` | ~122 MB | Pre-computed verse embeddings for semantic search |
+
+> **Note:** ONNX embedding models (~2.4 GB) are NOT bundled to keep the installer reasonable. Semantic vector search requires running `bun run setup:all` locally. FTS5 phrase search and direct detection work out of the box.
+
+### macOS First Launch
+
+The app is **unsigned** (no Apple Developer certificate). On first launch:
+1. **Right-click** the app → **Open** → click **Open** in the dialog
+2. Or: System Settings → Privacy & Security → scroll down → click **Open Anyway**
+3. Grant **Microphone** permission when prompted
 
 ## Project Structure
 

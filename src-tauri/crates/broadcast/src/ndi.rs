@@ -397,14 +397,43 @@ fn resolve_library_path() -> Result<PathBuf, NdiError> {
         ]
     };
 
-    let base = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
+    // Check dev path first (CARGO_MANIFEST_DIR/../../../sdk/ndi/...)
+    let dev_base = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../..");
     for candidate in &candidates {
         if candidate.is_empty() {
             continue;
         }
-        let absolute = base.join(candidate);
+        let absolute = dev_base.join(candidate);
         if absolute.exists() {
             return Ok(absolute);
+        }
+    }
+
+    // Production fallback — check Tauri resource directory.
+    // resource_dir() is set at runtime by the Tauri framework;
+    // we can't call app.path() here so we check a well-known
+    // sibling path relative to the running executable.
+    if let Ok(exe) = std::env::current_exe() {
+        // macOS: Rhema.app/Contents/MacOS/Rhema → ../Resources/
+        // Windows: install_dir/Rhema.exe → same dir or resources/
+        let resource_bases: Vec<PathBuf> = if cfg!(target_os = "macos") {
+            vec![
+                exe.parent().unwrap_or(Path::new(".")).join("../Resources"),
+            ]
+        } else {
+            vec![
+                exe.parent().unwrap_or(Path::new(".")).to_path_buf(),
+                exe.parent().unwrap_or(Path::new(".")).join("resources"),
+            ]
+        };
+
+        for base in &resource_bases {
+            for candidate in &candidates {
+                let path = base.join(candidate);
+                if path.exists() {
+                    return Ok(path);
+                }
+            }
         }
     }
 

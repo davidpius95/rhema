@@ -1,9 +1,9 @@
 name: Multi-Platform Release
 on:
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+  workflow_dispatch:
   push:
     tags:
-      - 'v*' # Trigger release automatically when a tag like v1.0.0 is pushed
+      - 'v*'
 
 jobs:
   release:
@@ -11,10 +11,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # macOS Universal Binary — single .dmg works on both Apple Silicon AND Intel Macs
           - platform: macos-latest
-            args: ''
+            args: '--target universal-apple-darwin'
+          # Windows x64
           - platform: windows-latest
-            args: ''
+            args: '--target x86_64-pc-windows-msvc'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -34,32 +36,75 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Prep NDI SDK and Bible Data
-        run: |
-          bun run download:ndi-sdk
-          bun run download:bible-data
-          bun run build:bible
+      # ── Prepare all runtime resources BEFORE the Rust build ──────────────
+      # These are bundled into the final installer via tauri.conf.json resources.
+      - name: Download Bible source data
+        run: bun run download:bible-data
 
+      - name: Build Bible SQLite database
+        run: bun run build:bible
+
+      - name: Download Whisper model (~394 MB)
+        run: bun run download:whisper
+
+      - name: Download NDI SDK (optional, broadcast feature)
+        run: bun run download:ndi-sdk
+        continue-on-error: true
+
+      # Create empty marker dirs so Tauri's resource bundler never fails on
+      # missing paths. The actual model files may or may not exist.
+      - name: Ensure resource directories exist
+        shell: bash
+        run: |
+          mkdir -p models/qwen3-embedding-0.6b
+          mkdir -p models/qwen3-embedding-0.6b-int8
+          mkdir -p embeddings
+
+      # ── Rust toolchain + targets ────────────────────────────────────────
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+
+      # macOS Universal Binary requires both arch targets
+      - name: Add macOS Intel target (for Universal Binary)
+        if: matrix.platform == 'macos-latest'
+        run: rustup target add x86_64-apple-darwin
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-          # Cache key includes "v2" to bust stale caches from earlier builds
-          # that had esaxx-rs compiled with /MT before the patch.
-          prefix-key: 'v2-rust'
+          prefix-key: 'v3-rust'
 
+      # On Windows: strip "staticlib" from crate-type so Cargo doesn't force
+      # +crt-static, which conflicts with ort-sys pre-built /MD binaries.
+      - name: Fix Windows CRT linkage
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          $content = Get-Content src-tauri/Cargo.toml -Raw
+          $content = $content -replace 'crate-type = \["staticlib", "cdylib", "rlib"\]', 'crate-type = ["cdylib", "rlib"]'
+          Set-Content -Path src-tauri/Cargo.toml -Value $content
+          Write-Host "Cargo.toml crate-type updated for Windows"
+
+      # ── Build + Release ─────────────────────────────────────────────────
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS: whisper.cpp/ggml uses std::filesystem which requires macOS 10.15+
+          # macOS: whisper.cpp/ggml requires std::filesystem → macOS 11.0+
           MACOSX_DEPLOYMENT_TARGET: '11.0'
         with:
           tagName: v__VERSION__
           releaseName: 'Rhema v__VERSION__'
-          releaseBody: 'Automated cross-platform build generated via GitHub Actions.'
+          releaseBody: |
+            ## Downloads
+            | Platform | File | Notes |
+            |----------|------|-------|
+            | **macOS** (Apple Silicon + Intel) | `.dmg` | Universal Binary — works on M1/M2/M3 and Intel Macs |
+            | **Windows** (x64) | `.msi` | 64-bit installer for Windows 10/11 |
+
+            > **First launch on macOS:** Right-click → Open (app is unsigned).
+            > **Whisper model:** Bundled. Local speech-to-text works out of the box.
           releaseDraft: true
           prerelease: false
+          args: ${{ matrix.args }}

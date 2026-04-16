@@ -38,11 +38,18 @@
     ],
     "resources": {
       "../data/rhema.db": "rhema.db",
-      "../models": "models",
+      "../models/whisper": "models/whisper",
+      "../sdk/ndi": "sdk/ndi",
       "../embeddings": "embeddings"
     },
     "macOS": {
-      "entitlements": "Entitlements.macOS.plist"
+      "entitlements": "Entitlements.macOS.plist",
+      "minimumSystemVersion": "11.0"
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      }
     }
   }
 }

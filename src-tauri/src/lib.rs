@@ -93,16 +93,19 @@ pub fn run() {
                 log::warn!("Bible database not found at {}", db_path.display());
             }
 
-            // Prefer INT8 quantized model (~571MB) over FP32 (~2.4GB)
-            let (models_dir, embeddings_dir) = app.path()
-                .resource_dir()
-                .map(|p| (p.join("models"), p.join("embeddings")))
-                .ok()
-                .filter(|(m, e)| m.exists() && e.exists())
-                .unwrap_or_else(|| {
-                    let base = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
-                    (base.join("models"), base.join("embeddings"))
-                });
+            // Resolve model and embedding paths — resource_dir (prod) first, dev fallback
+            let resource_dir = app.path().resource_dir().ok();
+            let dev_base = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..");
+
+            let models_dir = resource_dir.as_ref()
+                .map(|r| r.join("models"))
+                .filter(|p| p.exists())
+                .unwrap_or_else(|| dev_base.join("models"));
+
+            let embeddings_dir = resource_dir.as_ref()
+                .map(|r| r.join("embeddings"))
+                .filter(|p| p.exists())
+                .unwrap_or_else(|| dev_base.join("embeddings"));
 
             let model_path = {
                 let int8 = models_dir.join("qwen3-embedding-0.6b-int8/model_quantized.onnx");
