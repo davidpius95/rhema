@@ -42,7 +42,11 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+            workspaces: './src-tauri -> target'
+
+      - name: Set Windows RUSTFLAGS
+        if: matrix.platform == 'windows-latest'
+        run: echo "RUSTFLAGS=-C target-feature=+crt-static" >> $GITHUB_ENV
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
