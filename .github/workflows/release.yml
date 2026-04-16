@@ -52,13 +52,13 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS: whisper.cpp / ggml uses std::filesystem which requires macOS 10.15+
+          # macOS: whisper.cpp/ggml uses std::filesystem which requires macOS 10.15+
           MACOSX_DEPLOYMENT_TARGET: '11.0'
-          # Windows: force all C/C++ code (cmake + cc crate) to use static CRT
-          # to match esaxx-rs which always builds with /MT
-          CFLAGS: ${{ matrix.platform == 'windows-latest' && '/MT' || '' }}
-          CXXFLAGS: ${{ matrix.platform == 'windows-latest' && '/MT' || '' }}
-          RUSTFLAGS: ${{ matrix.platform == 'windows-latest' && '-C target-feature=+crt-static' || '' }}
+          # Windows: ort-sys ships pre-built ONNX Runtime binaries compiled with
+          # dynamic CRT (/MD). We MUST force everything else to also use /MD so
+          # the linker doesn't see MT-vs-MD mismatches. The minus sign in
+          # -crt-static means "use dynamic CRT".
+          RUSTFLAGS: ${{ matrix.platform == 'windows-latest' && '-C target-feature=-crt-static' || '' }}
         with:
           tagName: v__VERSION__
           releaseName: 'Rhema v__VERSION__'
