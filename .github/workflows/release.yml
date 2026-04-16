@@ -30,6 +30,12 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Prep NDI SDK and Bible Data
+        run: |
+          bun run download:ndi-sdk
+          bun run download:bible-data
+          bun run build:bible
+
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
