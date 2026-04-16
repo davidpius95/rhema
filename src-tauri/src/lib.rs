@@ -20,7 +20,10 @@ pub fn run() {
         )
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .manage(Mutex::new(state::AppState::new()))
+        .manage(Mutex::new(rhema_detection::DetectionPipeline::new()))
         .manage(Mutex::new(rhema_broadcast::ndi::NdiRuntime::default()))
         .manage(Mutex::new(rhema_detection::DirectDetector::new()))
         .manage(Mutex::new(rhema_detection::DetectionMerger::new()))
@@ -41,7 +44,6 @@ pub fn run() {
             commands::detection::detection_status,
             commands::detection::semantic_search,
             commands::detection::toggle_paraphrase_detection,
-            commands::detection::quotation_search,
             commands::detection::reading_mode_status,
             commands::detection::stop_reading_mode,
             commands::audio::get_audio_devices,
@@ -82,23 +84,9 @@ pub fn run() {
                 let bible_db = rhema_bible::BibleDb::open(&db_path)
                     .expect("Failed to open Bible database");
 
-                // Build quotation matching index from all English verses
-                log::info!("Building quotation matching index...");
-                let quotation_matcher = match bible_db.load_all_verses_for_quotation(Some("en")) {
-                    Ok(verses) => {
-                        log::info!("Loaded {} English verses for quotation index", verses.len());
-                        rhema_detection::QuotationMatcher::build(verses)
-                    }
-                    Err(e) => {
-                        log::warn!("Failed to load verses for quotation index: {e}");
-                        rhema_detection::QuotationMatcher::new()
-                    }
-                };
-
                 let managed_state = app.state::<Mutex<state::AppState>>();
                 let mut state = managed_state.lock().unwrap();
                 state.bible_db = Some(bible_db);
-                state.quotation_matcher = quotation_matcher;
                 drop(state);
                 log::info!("Bible database loaded from {}", db_path.display());
             } else {
@@ -131,8 +119,8 @@ pub fn run() {
                 match rhema_detection::OnnxEmbedder::load(&model_path, &tokenizer_path) {
                     Ok(embedder) => {
                         log::info!("ONNX embedding model loaded");
-                        let managed_state = app.state::<Mutex<state::AppState>>();
-                        let mut state = managed_state.lock().unwrap();
+                        let managed_pipeline = app.state::<Mutex<rhema_detection::DetectionPipeline>>();
+                        let mut pipeline = managed_pipeline.lock().unwrap();
 
                         // If pre-computed embeddings exist, load the vector index
                         if embeddings_path.exists() && ids_path.exists() {
@@ -140,7 +128,7 @@ pub fn run() {
                             match rhema_detection::HnswVectorIndex::load(&embeddings_path, &ids_path, dim) {
                                 Ok(index) => {
                                     log::info!("Verse embeddings loaded ({} vectors)", index.len());
-                                    state.detection_pipeline.set_semantic(
+                                    pipeline.set_semantic(
                                         rhema_detection::SemanticDetector::new(
                                             Box::new(embedder),
                                             Box::new(index),

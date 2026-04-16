@@ -1,6 +1,17 @@
 use super::automaton::BookMatch;
 use crate::types::VerseRef;
 
+/// Result of attempting to extract a continuation from text for an incomplete reference.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Continuation {
+    /// Found both chapter and verse: "chapter 3 verse 22"
+    ChapterAndVerse(i32, i32),
+    /// Found chapter only: "chapter 3" (still waiting for verse)
+    ChapterOnly(i32),
+    /// Found verse only: "verse 22", bare "22"
+    VerseOnly(i32),
+}
+
 /// Parse a Bible reference from text given a book match position.
 ///
 /// Looks ahead from the end of the book match for chapter:verse patterns.
@@ -13,8 +24,16 @@ pub fn parse_reference(text: &str, book_match: &BookMatch) -> Option<VerseRef> {
     // Tokenize the text after the book name for easier parsing
     let tokens = tokenize(after_trimmed);
 
+    // Pattern: Book name only (no chapter/verse) → chapter-only, held for refinement
+    // e.g., "Genesis" on a partial transcript — wait for chapter:verse to follow
     if tokens.is_empty() {
-        return None;
+        return Some(VerseRef {
+            book_number: book_match.book_number,
+            book_name: book_match.book_name.clone(),
+            chapter: 1,
+            verse_start: 0, // chapter-only — held for refinement by detector
+            verse_end: None,
+        });
     }
 
     // Try pattern: chapter:verse or chapter:verse-end
@@ -22,8 +41,20 @@ pub fn parse_reference(text: &str, book_match: &BookMatch) -> Option<VerseRef> {
         return Some(result);
     }
 
+    // Try pattern: corrections like "verse 5 sorry chapter 3" or "chapter 3 verse 5 sorry verse 7"
+    // Handles mid-speech corrections with keywords like "sorry", "rather", "I mean"
+    if let Some(result) = try_correction_pattern(&tokens, book_match) {
+        return Some(result);
+    }
+
     // Try pattern: "chapter N verse M" (spoken form)
     if let Some(result) = try_chapter_verse_spoken(&tokens, book_match) {
+        return Some(result);
+    }
+
+    // Try pattern: "verse N" (implies chapter 1)
+    // e.g., "Genesis verse 5" → Genesis 1:5
+    if let Some(result) = try_verse_only_pattern(&tokens, book_match) {
         return Some(result);
     }
 
@@ -45,6 +76,7 @@ pub fn parse_reference(text: &str, book_match: &BookMatch) -> Option<VerseRef> {
     }
 
     // Try pattern: just a number (chapter only)
+    // e.g., "Genesis 3" → Genesis 3:0 (incomplete, waiting for verse)
     if let Some(chapter) = token_to_number(&tokens[0]) {
         return Some(VerseRef {
             book_number: book_match.book_number,
@@ -150,6 +182,87 @@ fn try_colon_pattern(tokens: &[Token], book_match: &BookMatch) -> Option<VerseRe
     None
 }
 
+/// Try to parse correction patterns where user corrects themselves mid-speech.
+/// Examples:
+/// - "verse 5 sorry chapter 3" → chapter 3, verse 5
+/// - "verse 5 chapter 3 rather" → chapter 3, verse 5
+/// - "chapter 3 verse 5 sorry verse 7" → chapter 3, verse 7
+/// - "chapter 3 verse 5 I mean chapter 4 verse 7" → chapter 4, verse 7
+fn try_correction_pattern(tokens: &[Token], book_match: &BookMatch) -> Option<VerseRef> {
+    // Correction keywords
+    let correction_words = ["sorry", "rather", "meant", "mean"];
+
+    // Find if there's a correction keyword
+    let mut correction_idx = None;
+    for (i, token) in tokens.iter().enumerate() {
+        if let Token::Word(w) = token {
+            if correction_words.contains(&w.as_str()) {
+                correction_idx = Some(i);
+                break;
+            }
+        }
+    }
+
+    let correction_idx = correction_idx?;
+
+    // Parse before correction (initial statement)
+    let mut initial_chapter = None;
+    let mut initial_verse = None;
+
+    // Look for chapter/verse before correction
+    for i in 0..correction_idx {
+        if let Token::Word(w) = &tokens[i] {
+            if w == "chapter" {
+                if let Some((ch, _)) = consume_number(tokens, i + 1) {
+                    initial_chapter = Some(ch);
+                }
+            } else if w == "verse" || w == "verses" {
+                if let Some((v, _)) = consume_number(tokens, i + 1) {
+                    initial_verse = Some(v);
+                }
+            }
+        }
+    }
+
+    // Parse after correction (corrected statement)
+    let mut corrected_chapter = None;
+    let mut corrected_verse = None;
+
+    // Look for chapter/verse after correction
+    for i in (correction_idx + 1)..tokens.len() {
+        if let Token::Word(w) = &tokens[i] {
+            if w == "chapter" {
+                if let Some((ch, _)) = consume_number(tokens, i + 1) {
+                    corrected_chapter = Some(ch);
+                }
+            } else if w == "verse" || w == "verses" {
+                if let Some((v, _)) = consume_number(tokens, i + 1) {
+                    corrected_verse = Some(v);
+                }
+            }
+        }
+    }
+
+    // Apply correction logic:
+    // - If something is corrected, use the corrected value
+    // - Otherwise, keep the initial value
+    let final_chapter = corrected_chapter.or(initial_chapter);
+    let final_verse = corrected_verse.or(initial_verse);
+
+    // Must have at least a chapter or verse to be valid
+    if final_chapter.is_none() && final_verse.is_none() {
+        return None;
+    }
+
+    Some(VerseRef {
+        book_number: book_match.book_number,
+        book_name: book_match.book_name.clone(),
+        chapter: final_chapter.unwrap_or(1),
+        verse_start: final_verse.unwrap_or(1),
+        verse_end: None,
+    })
+}
+
 /// Try to parse "chapter N verse M" pattern.
 /// Handles filler words between chapter and verse:
 /// "chapter six we will be reading from verse 10 to verse 16" → 6:10-16
@@ -180,11 +293,22 @@ fn try_chapter_verse_spoken(tokens: &[Token], book_match: &BookMatch) -> Option<
                             }
                         }
                     }
-                    // No verse keyword found, treat as chapter-only
+                    // No verse keyword found — chapter-only, held for refinement
+                    // e.g., "Genesis chapter 3" → Genesis 3:0 (incomplete)
                     return Some(VerseRef {
                         book_number: book_match.book_number,
                         book_name: book_match.book_name.clone(),
                         chapter,
+                        verse_start: 0,
+                        verse_end: None,
+                    });
+                } else {
+                    // "chapter" keyword found but no number follows
+                    // e.g., "Genesis chapter" (incomplete) → chapter-only
+                    return Some(VerseRef {
+                        book_number: book_match.book_number,
+                        book_name: book_match.book_name.clone(),
+                        chapter: 1,
                         verse_start: 0,
                         verse_end: None,
                     });
@@ -223,6 +347,58 @@ fn scan_verse_end(tokens: &[Token], start: usize) -> Option<i32> {
                 // "to 16" pattern (no "verse" keyword)
                 if let Some((end, _)) = consume_number(tokens, next) {
                     return Some(end);
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Try to parse "verse N" pattern (just verse keyword followed by number, implies chapter 1).
+/// e.g., "Genesis verse 5" → Genesis 1:5
+fn try_verse_only_pattern(tokens: &[Token], book_match: &BookMatch) -> Option<VerseRef> {
+    for i in 0..tokens.len() {
+        if let Token::Word(w) = &tokens[i] {
+            if w == "verse" || w == "verses" {
+                // Check if this is NOT preceded by a chapter number or "chapter" keyword
+                // Need to check for:
+                // 1. Direct number before verse: "3 verse 1" or "Romans 8 and verse 28"
+                // 2. Spoken number before verse: "thirty two verse one"
+                // 3. "chapter" keyword anywhere before
+                let has_chapter_before = if i > 0 {
+                    // Check for ANY number token OR spoken number word OR "chapter" keyword
+                    // in the tokens before the "verse" keyword
+                    tokens[0..i].iter().any(|t| {
+                        match t {
+                            Token::Number(_) => true,
+                            Token::Word(w) => w == "chapter" || parse_spoken_number(w).is_some(),
+                            _ => false,
+                        }
+                    })
+                } else {
+                    false
+                };
+
+                if !has_chapter_before {
+                    if let Some((verse, _)) = consume_number(tokens, i + 1) {
+                        return Some(VerseRef {
+                            book_number: book_match.book_number,
+                            book_name: book_match.book_name.clone(),
+                            chapter: 1,
+                            verse_start: verse,
+                            verse_end: None,
+                        });
+                    } else {
+                        // "verse" keyword found but no number follows
+                        // e.g., "Genesis verse" (incomplete) → Genesis 1:1
+                        return Some(VerseRef {
+                            book_number: book_match.book_number,
+                            book_name: book_match.book_name.clone(),
+                            chapter: 1,
+                            verse_start: 1,
+                            verse_end: None,
+                        });
+                    }
                 }
             }
         }
@@ -470,6 +646,81 @@ pub fn parse_spoken_number(word: &str) -> Option<i32> {
     }
 }
 
+/// Try to extract a chapter and/or verse continuation from text that follows
+/// an incomplete reference (book-only or book+chapter).
+///
+/// Used when the previous STT segment detected a book name (possibly with
+/// chapter) and the current segment may contain the chapter/verse info.
+///
+/// The `is_book_only` flag indicates the incomplete ref has a defaulted chapter (1).
+/// When true, a bare number at start is interpreted as chapter, not verse.
+pub fn try_extract_continuation(text: &str, is_book_only: bool) -> Option<Continuation> {
+    let lower = text.to_lowercase();
+    let trimmed = lower.trim();
+    let tokens = tokenize(trimmed);
+
+    if tokens.is_empty() {
+        return None;
+    }
+
+    // Pattern 1: "chapter N [... verse M]"
+    for i in 0..tokens.len() {
+        if let Token::Word(w) = &tokens[i] {
+            if w == "chapter" {
+                if let Some((chapter, next_idx)) = consume_number(&tokens, i + 1) {
+                    if chapter <= 0 {
+                        continue;
+                    }
+                    // Scan forward for "verse" keyword (up to 15 tokens)
+                    let scan_limit = (next_idx + 15).min(tokens.len());
+                    for j in next_idx..scan_limit {
+                        if let Token::Word(vw) = &tokens[j] {
+                            if vw == "verse" || vw == "verses" {
+                                if let Some((verse, _)) = consume_number(&tokens, j + 1) {
+                                    if verse > 0 && verse <= 176 {
+                                        return Some(Continuation::ChapterAndVerse(
+                                            chapter, verse,
+                                        ));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // No verse found — chapter only
+                    return Some(Continuation::ChapterOnly(chapter));
+                }
+            }
+        }
+    }
+
+    // Pattern 2: "verse N" / "verses N" anywhere in text
+    for i in 0..tokens.len() {
+        if let Token::Word(w) = &tokens[i] {
+            if w == "verse" || w == "verses" {
+                if let Some((verse, _)) = consume_number(&tokens, i + 1) {
+                    if verse > 0 && verse <= 176 {
+                        return Some(Continuation::VerseOnly(verse));
+                    }
+                }
+            }
+        }
+    }
+
+    // Pattern 3: Bare number at start
+    if let Some((num, _)) = consume_number_at(&tokens, 0) {
+        if num > 0 && num <= 176 {
+            if is_book_only {
+                // After book-only (e.g., "Acts"), bare "3" = chapter
+                return Some(Continuation::ChapterOnly(num));
+            }
+            // After book+chapter (e.g., "Acts 3"), bare "22" = verse
+            return Some(Continuation::VerseOnly(num));
+        }
+    }
+
+    None
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -625,5 +876,244 @@ mod tests {
         assert_eq!(result.chapter, 3);
         assert_eq!(result.verse_start, 2);
         assert_eq!(result.verse_end, Some(3));
+    }
+
+    #[test]
+    fn test_book_only_is_chapter_only() {
+        // Pattern: Just book name → chapter-only (held for refinement)
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 1);
+        assert_eq!(result.verse_start, 0); // chapter-only
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_book_chapter_is_chapter_only() {
+        // Pattern: "Genesis chapter 3" → chapter-only (held for refinement)
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis chapter 3";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 3);
+        assert_eq!(result.verse_start, 0); // chapter-only
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_book_number_incomplete() {
+        // Pattern: "Genesis 5" → Genesis 5:0 (incomplete, waiting for verse)
+        // This allows continuation like "verse 16" to complete it to Genesis 5:16
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis 5";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 5);
+        assert_eq!(result.verse_start, 0);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_book_verse_defaults_to_chapter_1() {
+        // Pattern: "Genesis verse 10" → Genesis 1:10
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis verse 10";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 1);
+        assert_eq!(result.verse_start, 10);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_john_only_is_chapter_only() {
+        // Pattern: "John" → chapter-only (held for refinement)
+        let bm = make_book_match("John", 43, 4);
+        let text = "John";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 1);
+        assert_eq!(result.verse_start, 0); // chapter-only
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_romans_chapter_8_is_chapter_only() {
+        // Pattern: "Romans chapter 8" → chapter-only (held for refinement)
+        let bm = make_book_match("Romans", 45, 6);
+        let text = "Romans chapter 8";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 8);
+        assert_eq!(result.verse_start, 0); // chapter-only
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_psalms_verse_23_defaults_to_chapter_1() {
+        // Pattern: "Psalms verse 23" → Psalms 1:23
+        let bm = make_book_match("Psalms", 19, 6);
+        let text = "Psalms verse 23";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 1);
+        assert_eq!(result.verse_start, 23);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_correction_verse_then_chapter() {
+        // Pattern: "Genesis verse 5 sorry chapter 3" → Genesis 3:5
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis verse 5 sorry chapter 3";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 3);
+        assert_eq!(result.verse_start, 5);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_correction_verse_then_chapter_rather() {
+        // Pattern: "Genesis verse 5 chapter 3 rather" → Genesis 3:5
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis verse 5 chapter 3 rather";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 3);
+        assert_eq!(result.verse_start, 5);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_correction_full_reference() {
+        // Pattern: "Genesis chapter 3 verse 5 sorry chapter 3 verse 7" → Genesis 3:7
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis chapter 3 verse 5 sorry chapter 3 verse 7";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 3);
+        assert_eq!(result.verse_start, 7);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_correction_chapter_change() {
+        // Pattern: "Genesis chapter 3 verse 5 I mean chapter 4 verse 7" → Genesis 4:7
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis chapter 3 verse 5 I mean chapter 4 verse 7";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 4);
+        assert_eq!(result.verse_start, 7);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_correction_verse_only() {
+        // Pattern: "John chapter 3 verse 16 sorry verse 17" → John 3:17
+        let bm = make_book_match("John", 43, 4);
+        let text = "John chapter 3 verse 16 sorry verse 17";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 3);
+        assert_eq!(result.verse_start, 17);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_correction_chapter_only() {
+        // Pattern: "Romans chapter 8 sorry chapter 12" → Romans 12:1
+        let bm = make_book_match("Romans", 45, 6);
+        let text = "Romans chapter 8 sorry chapter 12";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 12);
+        assert_eq!(result.verse_start, 1);
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_incomplete_chapter_keyword() {
+        // Pattern: "Genesis chapter" (incomplete, no number) → chapter-only
+        let bm = make_book_match("Genesis", 1, 7);
+        let text = "Genesis chapter";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 1);
+        assert_eq!(result.verse_start, 0); // chapter-only
+        assert_eq!(result.verse_end, None);
+    }
+
+    #[test]
+    fn test_incomplete_verse_keyword() {
+        // Pattern: "John verse" (incomplete, no number) → John 1:1
+        let bm = make_book_match("John", 43, 4);
+        let text = "John verse";
+        let result = parse_reference(text, &bm).unwrap();
+        assert_eq!(result.chapter, 1);
+        assert_eq!(result.verse_start, 1);
+        assert_eq!(result.verse_end, None);
+    }
+
+    // ========== Continuation Extraction Tests ==========
+
+    #[test]
+    fn test_continuation_chapter_and_verse() {
+        assert_eq!(
+            try_extract_continuation("chapter 3 verse 22", false),
+            Some(Continuation::ChapterAndVerse(3, 22))
+        );
+        assert_eq!(
+            try_extract_continuation("chapter three and I'm reading from verse twenty two", false),
+            Some(Continuation::ChapterAndVerse(3, 22))
+        );
+    }
+
+    #[test]
+    fn test_continuation_chapter_only() {
+        assert_eq!(
+            try_extract_continuation("chapter three, and I'm reading from verse", false),
+            Some(Continuation::ChapterOnly(3))
+        );
+        assert_eq!(
+            try_extract_continuation("chapter 5", false),
+            Some(Continuation::ChapterOnly(5))
+        );
+    }
+
+    #[test]
+    fn test_continuation_verse_anywhere() {
+        assert_eq!(
+            try_extract_continuation("and I'm reading from verse 22", false),
+            Some(Continuation::VerseOnly(22))
+        );
+        assert_eq!(
+            try_extract_continuation("verse sixteen", false),
+            Some(Continuation::VerseOnly(16))
+        );
+    }
+
+    #[test]
+    fn test_continuation_bare_number_book_only() {
+        // After book-only detection, bare number = chapter
+        assert_eq!(
+            try_extract_continuation("3", true),
+            Some(Continuation::ChapterOnly(3))
+        );
+        assert_eq!(
+            try_extract_continuation("three", true),
+            Some(Continuation::ChapterOnly(3))
+        );
+    }
+
+    #[test]
+    fn test_continuation_bare_number_with_chapter() {
+        // After book+chapter detection, bare number = verse
+        assert_eq!(
+            try_extract_continuation("22", false),
+            Some(Continuation::VerseOnly(22))
+        );
+        assert_eq!(
+            try_extract_continuation("22. Acts three for Moses", false),
+            Some(Continuation::VerseOnly(22))
+        );
+    }
+
+    #[test]
+    fn test_continuation_no_match() {
+        assert_eq!(try_extract_continuation("the weather is nice", false), None);
+        assert_eq!(
+            try_extract_continuation("something unrelated here", false),
+            None
+        );
     }
 }

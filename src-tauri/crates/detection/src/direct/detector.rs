@@ -14,45 +14,216 @@ const TRANSLATION_COMMANDS: &[(&str, &str)] = &[
     ("read in niv", "NIV"),
     ("switch to niv", "NIV"),
     ("in the niv", "NIV"),
+    ("can i have it in niv", "NIV"),
+    ("can i have that in niv", "NIV"),
+    ("show me niv", "NIV"),
     ("new international version", "NIV"),
+    ("in new international", "NIV"),
     // ESV
     ("give me esv", "ESV"),
     ("read in esv", "ESV"),
     ("switch to esv", "ESV"),
     ("in the esv", "ESV"),
+    ("can i have it in esv", "ESV"),
+    ("can i have that in esv", "ESV"),
+    ("show me esv", "ESV"),
     ("english standard version", "ESV"),
+    ("in english standard", "ESV"),
     // NASB
     ("give me nasb", "NASB"),
     ("read in nasb", "NASB"),
     ("switch to nasb", "NASB"),
     ("in the nasb", "NASB"),
+    ("can i have it in nasb", "NASB"),
+    ("can i have that in nasb", "NASB"),
+    ("show me nasb", "NASB"),
     ("new american standard", "NASB"),
+    ("in new american", "NASB"),
     // NKJV
     ("give me nkjv", "NKJV"),
     ("read in nkjv", "NKJV"),
     ("switch to nkjv", "NKJV"),
     ("in the nkjv", "NKJV"),
+    ("can i have it in nkjv", "NKJV"),
+    ("can i have that in nkjv", "NKJV"),
+    ("show me nkjv", "NKJV"),
     ("new king james", "NKJV"),
+    ("in new king james", "NKJV"),
     // NLT
     ("give me nlt", "NLT"),
     ("read in nlt", "NLT"),
     ("switch to nlt", "NLT"),
     ("in the nlt", "NLT"),
+    ("can i have it in nlt", "NLT"),
+    ("can i have that in nlt", "NLT"),
+    ("show me nlt", "NLT"),
     ("new living translation", "NLT"),
+    ("in new living", "NLT"),
     // KJV
     ("give me kjv", "KJV"),
     ("read in kjv", "KJV"),
     ("switch to kjv", "KJV"),
     ("in the kjv", "KJV"),
+    ("can i have it in kjv", "KJV"),
+    ("can i have that in kjv", "KJV"),
+    ("show me kjv", "KJV"),
     ("king james version", "KJV"),
     ("king james", "KJV"),
+    ("in king james", "KJV"),
     // AMP
     ("give me amp", "AMP"),
     ("give me amplified", "AMP"),
     ("read in amplified", "AMP"),
     ("switch to amplified", "AMP"),
+    ("in the amplified", "AMP"),
+    ("can i have it in amplified", "AMP"),
+    ("can i have that in amplified", "AMP"),
+    ("can i have it in amp", "AMP"),
+    ("can i have that in amp", "AMP"),
+    ("show me amplified", "AMP"),
+    ("show me amp", "AMP"),
     ("amplified bible", "AMP"),
     ("amplified version", "AMP"),
+    ("amplified translation", "AMP"),
+    ("in amplified version", "AMP"),
+    ("in amplified translation", "AMP"),
+    // SpaRV (Spanish - Reina-Valera 1909)
+    ("give me reina valera", "SpaRV"),
+    ("read in reina valera", "SpaRV"),
+    ("switch to reina valera", "SpaRV"),
+    ("in reina valera", "SpaRV"),
+    ("can i have it in reina valera", "SpaRV"),
+    ("can i have that in reina valera", "SpaRV"),
+    ("show me reina valera", "SpaRV"),
+    ("give me spanish", "SpaRV"),
+    ("read in spanish", "SpaRV"),
+    ("switch to spanish", "SpaRV"),
+    ("in spanish", "SpaRV"),
+    ("can i have it in spanish", "SpaRV"),
+    ("can i have that in spanish", "SpaRV"),
+    ("spanish version", "SpaRV"),
+    ("spanish translation", "SpaRV"),
+    // FreJND (French - J.N. Darby)
+    ("give me french", "FreJND"),
+    ("read in french", "FreJND"),
+    ("switch to french", "FreJND"),
+    ("in french", "FreJND"),
+    ("can i have it in french", "FreJND"),
+    ("can i have that in french", "FreJND"),
+    ("show me french", "FreJND"),
+    ("french version", "FreJND"),
+    ("french translation", "FreJND"),
+    ("darby french", "FreJND"),
+    // PorBLivre (Portuguese - Biblia Livre)
+    ("give me portuguese", "PorBLivre"),
+    ("read in portuguese", "PorBLivre"),
+    ("switch to portuguese", "PorBLivre"),
+    ("in portuguese", "PorBLivre"),
+    ("can i have it in portuguese", "PorBLivre"),
+    ("can i have that in portuguese", "PorBLivre"),
+    ("show me portuguese", "PorBLivre"),
+    ("portuguese version", "PorBLivre"),
+    ("portuguese translation", "PorBLivre"),
+    ("biblia livre", "PorBLivre"),
+    // MSG (The Message)
+    ("give me message", "MSG"),
+    ("give me the message", "MSG"),
+    ("read in message", "MSG"),
+    ("read in the message", "MSG"),
+    ("switch to message", "MSG"),
+    ("switch to the message", "MSG"),
+    ("in the message", "MSG"),
+    ("can i have it in message", "MSG"),
+    ("can i have that in message", "MSG"),
+    ("can i have it in the message", "MSG"),
+    ("can i have that in the message", "MSG"),
+    ("show me message", "MSG"),
+    ("show me the message", "MSG"),
+    ("message version", "MSG"),
+    ("message translation", "MSG"),
+    ("message bible", "MSG"),
+    // HCSB (Holman Christian Standard Bible) - must come before CSB to avoid substring matches
+    ("give me hcsb", "HCSB"),
+    ("read in hcsb", "HCSB"),
+    ("switch to hcsb", "HCSB"),
+    ("in the hcsb", "HCSB"),
+    ("can i have it in hcsb", "HCSB"),
+    ("can i have that in hcsb", "HCSB"),
+    ("show me hcsb", "HCSB"),
+    ("holman christian standard", "HCSB"),
+    ("holman christian", "HCSB"),
+    ("in holman christian", "HCSB"),
+    // CSB (Christian Standard Bible)
+    ("give me csb", "CSB"),
+    ("read in csb", "CSB"),
+    ("switch to csb", "CSB"),
+    ("in the csb", "CSB"),
+    ("can i have it in csb", "CSB"),
+    ("can i have that in csb", "CSB"),
+    ("show me csb", "CSB"),
+    ("christian standard bible", "CSB"),
+    ("christian standard", "CSB"),
+    ("in christian standard", "CSB"),
+    // NRSV (New Revised Standard Version) - must come before RSV to avoid substring matches
+    ("give me nrsv", "NRSV"),
+    ("read in nrsv", "NRSV"),
+    ("switch to nrsv", "NRSV"),
+    ("in the nrsv", "NRSV"),
+    ("can i have it in nrsv", "NRSV"),
+    ("can i have that in nrsv", "NRSV"),
+    ("show me nrsv", "NRSV"),
+    ("new revised standard version", "NRSV"),
+    ("new revised standard", "NRSV"),
+    ("in new revised standard", "NRSV"),
+    // RSV (Revised Standard Version)
+    ("give me rsv", "RSV"),
+    ("read in rsv", "RSV"),
+    ("switch to rsv", "RSV"),
+    ("in the rsv", "RSV"),
+    ("can i have it in rsv", "RSV"),
+    ("can i have that in rsv", "RSV"),
+    ("show me rsv", "RSV"),
+    ("revised standard version", "RSV"),
+    ("revised standard", "RSV"),
+    ("in revised standard", "RSV"),
+    // NET (New English Translation)
+    ("give me net", "NET"),
+    ("read in net", "NET"),
+    ("switch to net", "NET"),
+    ("in the net", "NET"),
+    ("can i have it in net", "NET"),
+    ("can i have that in net", "NET"),
+    ("show me net", "NET"),
+    ("new english translation", "NET"),
+    ("in new english", "NET"),
+    // CEV (Contemporary English Version)
+    ("give me cev", "CEV"),
+    ("read in cev", "CEV"),
+    ("switch to cev", "CEV"),
+    ("in the cev", "CEV"),
+    ("can i have it in cev", "CEV"),
+    ("can i have that in cev", "CEV"),
+    ("show me cev", "CEV"),
+    ("contemporary english", "CEV"),
+    ("contemporary english version", "CEV"),
+    ("in contemporary english", "CEV"),
+    // GNT/GNB (Good News Translation / Good News Bible)
+    ("give me gnt", "GNT"),
+    ("give me gnb", "GNT"),
+    ("read in gnt", "GNT"),
+    ("read in gnb", "GNT"),
+    ("switch to gnt", "GNT"),
+    ("switch to gnb", "GNT"),
+    ("in the gnt", "GNT"),
+    ("in the gnb", "GNT"),
+    ("can i have it in gnt", "GNT"),
+    ("can i have that in gnt", "GNT"),
+    ("show me gnt", "GNT"),
+    ("show me gnb", "GNT"),
+    ("good news", "GNT"),
+    ("good news translation", "GNT"),
+    ("good news bible", "GNT"),
+    ("in good news", "GNT"),
 ];
 
 /// Maximum chapter count per book (`book_number` 1-66).
@@ -137,11 +308,6 @@ fn is_valid_reference(book_number: i32, chapter: i32) -> bool {
     chapter >= 1 && chapter <= max_ch
 }
 
-/// Confidence assigned to chapter-only references (no verse specified).
-/// Lower than full references (0.90+) since the user likely wants a specific verse.
-/// Matches Logos AI's `CHAPTER_ONLY_CONFIDENCE` default of 0.75.
-const CHAPTER_ONLY_CONFIDENCE: f64 = 0.75;
-
 /// Filler phrases commonly found in sermon transcripts that confuse detection.
 /// These are stripped (case-insensitively) before the text reaches the automaton.
 const FILLER_PHRASES: &[&str] = &[
@@ -225,14 +391,18 @@ fn clean_transcript(text: &str) -> String {
     collapsed.trim().to_string()
 }
 
-/// How long to wait for an incomplete reference to be completed (5 seconds).
-const INCOMPLETE_REF_TIMEOUT_MS: u128 = 5000;
+/// How long to wait for an incomplete reference to be completed (15 seconds).
+/// Preachers often pause between book name and chapter/verse.
+const INCOMPLETE_REF_TIMEOUT_MS: u128 = 15_000;
 
 /// An incomplete reference waiting for verse completion.
 #[derive(Debug, Clone)]
 struct IncompleteRef {
     verse_ref: VerseRef,
     timestamp: Instant,
+    /// When true, the chapter field is a default (1), not explicitly spoken.
+    /// Bare numbers should be interpreted as chapter, not verse.
+    chapter_is_default: bool,
 }
 
 /// Main orchestrator for direct Bible reference detection.
@@ -312,6 +482,17 @@ impl DirectDetector {
                 "nlt" => Some("NLT"),
                 "kjv" => Some("KJV"),
                 "amp" | "amplified" => Some("AMP"),
+                "sparv" | "spanish" => Some("SpaRV"),
+                "frejnd" | "french" => Some("FreJND"),
+                "porblivre" | "portuguese" => Some("PorBLivre"),
+                "msg" | "message" => Some("MSG"),
+                "csb" => Some("CSB"),
+                "hcsb" => Some("HCSB"),
+                "rsv" => Some("RSV"),
+                "nrsv" => Some("NRSV"),
+                "net" => Some("NET"),
+                "cev" => Some("CEV"),
+                "gnt" | "gnb" => Some("GNT"),
                 _ => None,
             };
             if let Some(abbrev) = matched {
@@ -339,39 +520,65 @@ impl DirectDetector {
             return detections;
         }
 
-        // Step 0c: Check if there's a pending incomplete reference
-        // Try to complete it with the current text, or emit it if timed out.
+        // Step 0c: Check if there's a pending incomplete reference.
+        // Try to complete it with chapter/verse continuation, or expire on timeout.
         if let Some(ref incomplete) = self.incomplete.clone() {
             let elapsed = incomplete.timestamp.elapsed().as_millis();
             if elapsed > INCOMPLETE_REF_TIMEOUT_MS {
-                // Timeout: emit the chapter-only reference (verse 1)
-                let mut ref_with_verse = incomplete.verse_ref.clone();
-                ref_with_verse.verse_start = 1;
-                detections.push(self.make_direct_detection(
-                    &ref_with_verse,
-                    CHAPTER_ONLY_CONFIDENCE,
-                    text,
-                    0,
-                    text.len(),
-                ));
-                self.push_recent(&ref_with_verse);
-                self.context.update(&ref_with_verse);
+                // Timeout: clean up pending state (EDGE-02).
                 self.incomplete = None;
-            } else if let Some(verse) = try_extract_verse_continuation(text) {
-                // Completed! Merge the verse into the incomplete ref.
-                let mut completed = incomplete.verse_ref.clone();
-                completed.verse_start = verse;
-                detections.push(self.make_direct_detection(
-                    &completed,
-                    compute_confidence(&completed, &completed),
-                    text,
-                    0,
-                    text.len(),
-                ));
-                self.push_recent(&completed);
-                self.context.update(&completed);
-                self.incomplete = None;
-                return detections; // The continuation IS the detection
+            } else if let Some(cont) =
+                parser::try_extract_continuation(text, incomplete.chapter_is_default)
+            {
+                match cont {
+                    parser::Continuation::ChapterAndVerse(ch, v) => {
+                        let mut completed = incomplete.verse_ref.clone();
+                        completed.chapter = ch;
+                        completed.verse_start = v;
+                        if is_valid_reference(completed.book_number, completed.chapter) {
+                            detections.push(self.make_direct_detection(
+                                &completed,
+                                compute_confidence(&completed, &completed),
+                                text,
+                                0,
+                                text.len(),
+                            ));
+                            self.push_recent(&completed);
+                            self.context.update(&completed);
+                        }
+                        self.incomplete = None;
+                        return detections;
+                    }
+                    parser::Continuation::VerseOnly(v) => {
+                        let mut completed = incomplete.verse_ref.clone();
+                        completed.verse_start = v;
+                        if is_valid_reference(completed.book_number, completed.chapter) {
+                            detections.push(self.make_direct_detection(
+                                &completed,
+                                compute_confidence(&completed, &completed),
+                                text,
+                                0,
+                                text.len(),
+                            ));
+                            self.push_recent(&completed);
+                            self.context.update(&completed);
+                        }
+                        self.incomplete = None;
+                        return detections;
+                    }
+                    parser::Continuation::ChapterOnly(ch) => {
+                        // Update chapter, reset timeout, keep waiting for verse.
+                        let mut updated = incomplete.verse_ref.clone();
+                        updated.chapter = ch;
+                        self.incomplete = Some(IncompleteRef {
+                            verse_ref: updated.clone(),
+                            timestamp: Instant::now(),
+                            chapter_is_default: false,
+                        });
+                        self.context.update(&updated);
+                        // Fall through to book matcher (text may also contain a new book)
+                    }
+                }
             }
         }
 
@@ -414,11 +621,19 @@ impl DirectDetector {
                     continue;
                 }
 
-                // Chapter-only: hold as incomplete reference, wait for verse
+                // Chapter-only: hold for refinement, don't emit yet.
+                // The full reference (with verse) will arrive when the user
+                // finishes speaking and will be emitted then.
                 if resolved.verse_start == 0 {
+                    // Detect if chapter was explicitly spoken or defaulted.
+                    let after_book = text[book_match.end..].trim();
+                    let has_explicit_chapter =
+                        after_book.starts_with(|c: char| c.is_ascii_digit())
+                            || after_book.to_lowercase().starts_with("chapter");
                     self.incomplete = Some(IncompleteRef {
                         verse_ref: resolved.clone(),
                         timestamp: Instant::now(),
+                        chapter_is_default: !has_explicit_chapter,
                     });
                     self.context.update(&resolved);
                     continue;
@@ -446,6 +661,7 @@ impl DirectDetector {
                     source: DetectionSource::DirectReference,
                     transcript_snippet: snippet,
                     detected_at: now,
+                    is_chapter_only: false,
                 };
 
                 // Track in recent detections for "previous verse" support
@@ -480,6 +696,7 @@ impl DirectDetector {
                         source: DetectionSource::DirectReference,
                         transcript_snippet: text.to_string(),
                         detected_at: now,
+                        is_chapter_only: false,
                     });
                 }
             }
@@ -533,6 +750,7 @@ impl DirectDetector {
             source: DetectionSource::DirectReference,
             transcript_snippet: snippet,
             detected_at: now,
+            is_chapter_only: false,
         }
     }
 }
@@ -543,47 +761,6 @@ impl Default for DirectDetector {
     }
 }
 
-/// Try to extract a verse number from text that may be a continuation
-/// of an incomplete reference. Matches patterns like:
-/// - "verse 16", "verses 3"
-/// - "16" (bare number at start)
-/// - "and verse 5"
-fn try_extract_verse_continuation(text: &str) -> Option<i32> {
-    let lower = text.to_lowercase();
-    let trimmed = lower.trim();
-
-    // Pattern: "verse N" or "verses N"
-    for prefix in &["verse ", "verses ", "and verse ", "and verses "] {
-        if let Some(rest) = trimmed.strip_prefix(prefix) {
-            let num_str: String = rest.chars().take_while(char::is_ascii_digit).collect();
-            if let Ok(n) = num_str.parse::<i32>() {
-                if n > 0 {
-                    return Some(n);
-                }
-            }
-            // Try spoken number
-            let word: String = rest.chars().take_while(|c| c.is_alphabetic()).collect();
-            if let Some(n) = parser::parse_spoken_number(&word) {
-                if n > 0 {
-                    return Some(n);
-                }
-            }
-        }
-    }
-
-    // Pattern: bare number at start (e.g., "16 for God so loved")
-    let num_str: String = trimmed.chars().take_while(char::is_ascii_digit).collect();
-    if !num_str.is_empty() && num_str.len() <= 3 {
-        if let Ok(n) = num_str.parse::<i32>() {
-            if n > 0 && n <= 176 {
-                // Max verse number in Bible (Psalm 119)
-                return Some(n);
-            }
-        }
-    }
-
-    None
-}
 
 /// Compute a confidence score for the detection.
 /// Full explicit references (book + chapter + verse) get 1.0.
@@ -681,29 +858,83 @@ mod tests {
 
     #[test]
     fn test_chapter_only_held_as_incomplete() {
-        // Chapter-only references are held as incomplete, waiting for verse completion
+        // Chapter-only references are NOT emitted — just held as incomplete for refinement
         let mut detector = DirectDetector::new();
         let results = detector.detect("Genesis 3 is about the fall of man");
-        // Not emitted yet — held as incomplete
+        assert!(results.is_empty()); // No emission
+        assert!(detector.incomplete.is_some()); // Held for refinement
+        let inc = detector.incomplete.as_ref().unwrap();
+        assert_eq!(inc.verse_ref.book_name, "Genesis");
+        assert_eq!(inc.verse_ref.chapter, 3);
+    }
+
+    #[test]
+    fn test_chapter_only_no_duplicate_on_repeat() {
+        // Same book+chapter in a subsequent call — still held, no emission
+        let mut detector = DirectDetector::new();
+        let results = detector.detect("Genesis 3");
+        assert!(results.is_empty());
+        assert!(detector.incomplete.is_some());
+
+        // Same text again — still held
+        let results = detector.detect("Genesis 3");
         assert!(results.is_empty());
         assert!(detector.incomplete.is_some());
     }
 
     #[test]
     fn test_incomplete_ref_completed_by_verse() {
-        // An incomplete reference can be completed by a subsequent "verse N" text
+        // Chapter-only held, then refined by verse continuation
         let mut detector = DirectDetector::new();
-        // First: chapter-only
+        // First: chapter-only — held as incomplete, not emitted
         let results = detector.detect("Genesis 3");
         assert!(results.is_empty());
         assert!(detector.incomplete.is_some());
 
-        // Second: verse continuation
+        // Second: verse continuation — refines the detection
         let results = detector.detect("verse 15");
-        assert!(!results.is_empty());
+        assert_eq!(results.len(), 1);
         assert_eq!(results[0].verse_ref.book_name, "Genesis");
         assert_eq!(results[0].verse_ref.chapter, 3);
         assert_eq!(results[0].verse_ref.verse_start, 15);
+        assert!(!results[0].is_chapter_only);
+        assert!(detector.incomplete.is_none());
+    }
+
+    #[test]
+    fn test_new_book_supersedes_incomplete() {
+        // EDGE-01: a new book/chapter replaces the pending incomplete cleanly
+        let mut detector = DirectDetector::new();
+        let results = detector.detect("Genesis 3");
+        assert!(results.is_empty()); // chapter-only, not emitted
+        assert!(detector.incomplete.is_some());
+
+        // Different book — supersedes Genesis 3
+        let results = detector.detect("let's look at John 1");
+        assert!(results.is_empty()); // also chapter-only, not emitted
+        // Incomplete now tracks John 1, not Genesis 3
+        let inc = detector.incomplete.as_ref().unwrap();
+        assert_eq!(inc.verse_ref.book_name, "John");
+    }
+
+    #[test]
+    fn test_abandoned_partial_no_stale_state() {
+        // EDGE-02: after timeout, incomplete is cleaned up without re-emission
+        let mut detector = DirectDetector::new();
+        let results = detector.detect("Genesis 3");
+        assert!(results.is_empty()); // chapter-only, not emitted
+        assert!(detector.incomplete.is_some());
+
+        // Simulate timeout by replacing with an expired timestamp (exceeds 15s)
+        detector.incomplete = Some(IncompleteRef {
+            verse_ref: detector.incomplete.as_ref().unwrap().verse_ref.clone(),
+            timestamp: Instant::now() - std::time::Duration::from_secs(20),
+            chapter_is_default: detector.incomplete.as_ref().unwrap().chapter_is_default,
+        });
+
+        // Next detect call should clean up without emitting
+        let results = detector.detect("something unrelated");
+        assert!(results.is_empty());
         assert!(detector.incomplete.is_none());
     }
 
@@ -819,5 +1050,272 @@ mod tests {
         assert_eq!(results[0].verse_ref.book_name, "Philippians");
         assert_eq!(results[0].verse_ref.chapter, 4);
         assert_eq!(results[0].verse_ref.verse_start, 13);
+    }
+
+    // ========== Translation Command Detection Tests ==========
+
+    #[test]
+    fn test_translation_command_basic_niv() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("give me niv"), Some("NIV".to_string()));
+        assert_eq!(detector.detect_translation_command("read in niv"), Some("NIV".to_string()));
+        assert_eq!(detector.detect_translation_command("switch to niv"), Some("NIV".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_natural_language() {
+        let detector = DirectDetector::new();
+        assert_eq!(
+            detector.detect_translation_command("can i have it in amplified"),
+            Some("AMP".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("can i have that in amplified version"),
+            Some("AMP".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("can i have it in esv"),
+            Some("ESV".to_string())
+        );
+    }
+
+    #[test]
+    fn test_translation_command_full_names() {
+        let detector = DirectDetector::new();
+        assert_eq!(
+            detector.detect_translation_command("new international version"),
+            Some("NIV".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("king james version"),
+            Some("KJV".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("english standard version"),
+            Some("ESV".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("amplified bible"),
+            Some("AMP".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("new living translation"),
+            Some("NLT".to_string())
+        );
+    }
+
+    #[test]
+    fn test_translation_command_bare_abbreviations() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("niv"), Some("NIV".to_string()));
+        assert_eq!(detector.detect_translation_command("esv"), Some("ESV".to_string()));
+        assert_eq!(detector.detect_translation_command("kjv"), Some("KJV".to_string()));
+        assert_eq!(detector.detect_translation_command("amp"), Some("AMP".to_string()));
+        assert_eq!(detector.detect_translation_command("nasb"), Some("NASB".to_string()));
+        assert_eq!(detector.detect_translation_command("nkjv"), Some("NKJV".to_string()));
+        assert_eq!(detector.detect_translation_command("nlt"), Some("NLT".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_in_sentence() {
+        let detector = DirectDetector::new();
+        assert_eq!(
+            detector.detect_translation_command("show me genesis 3:16 in the amplified"),
+            Some("AMP".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("read john 3:16 in niv"),
+            Some("NIV".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("i want to read that in the message"),
+            Some("MSG".to_string())
+        );
+    }
+
+    #[test]
+    fn test_translation_command_message_bible() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("give me the message"), Some("MSG".to_string()));
+        assert_eq!(detector.detect_translation_command("read in the message"), Some("MSG".to_string()));
+        assert_eq!(detector.detect_translation_command("switch to message"), Some("MSG".to_string()));
+        assert_eq!(detector.detect_translation_command("message version"), Some("MSG".to_string()));
+        assert_eq!(detector.detect_translation_command("message bible"), Some("MSG".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_csb_hcsb() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("give me csb"), Some("CSB".to_string()));
+        assert_eq!(detector.detect_translation_command("christian standard bible"), Some("CSB".to_string()));
+        assert_eq!(detector.detect_translation_command("give me hcsb"), Some("HCSB".to_string()));
+        assert_eq!(detector.detect_translation_command("holman christian standard"), Some("HCSB".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_revised_standard() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("give me rsv"), Some("RSV".to_string()));
+        assert_eq!(detector.detect_translation_command("revised standard version"), Some("RSV".to_string()));
+        assert_eq!(detector.detect_translation_command("give me nrsv"), Some("NRSV".to_string()));
+        assert_eq!(detector.detect_translation_command("new revised standard"), Some("NRSV".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_good_news() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("give me gnt"), Some("GNT".to_string()));
+        assert_eq!(detector.detect_translation_command("give me gnb"), Some("GNT".to_string()));
+        assert_eq!(detector.detect_translation_command("good news translation"), Some("GNT".to_string()));
+        assert_eq!(detector.detect_translation_command("good news bible"), Some("GNT".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_net_cev() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("give me net"), Some("NET".to_string()));
+        assert_eq!(detector.detect_translation_command("new english translation"), Some("NET".to_string()));
+        assert_eq!(detector.detect_translation_command("give me cev"), Some("CEV".to_string()));
+        assert_eq!(detector.detect_translation_command("contemporary english version"), Some("CEV".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_non_english() {
+        let detector = DirectDetector::new();
+        // Spanish
+        assert_eq!(detector.detect_translation_command("give me spanish"), Some("SpaRV".to_string()));
+        assert_eq!(detector.detect_translation_command("read in reina valera"), Some("SpaRV".to_string()));
+        assert_eq!(detector.detect_translation_command("in spanish"), Some("SpaRV".to_string()));
+
+        // French
+        assert_eq!(detector.detect_translation_command("give me french"), Some("FreJND".to_string()));
+        assert_eq!(detector.detect_translation_command("read in french"), Some("FreJND".to_string()));
+        assert_eq!(detector.detect_translation_command("darby french"), Some("FreJND".to_string()));
+
+        // Portuguese
+        assert_eq!(detector.detect_translation_command("give me portuguese"), Some("PorBLivre".to_string()));
+        assert_eq!(detector.detect_translation_command("biblia livre"), Some("PorBLivre".to_string()));
+        assert_eq!(detector.detect_translation_command("in portuguese"), Some("PorBLivre".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_case_insensitive() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("GIVE ME NIV"), Some("NIV".to_string()));
+        assert_eq!(detector.detect_translation_command("Give Me Amplified"), Some("AMP".to_string()));
+        assert_eq!(detector.detect_translation_command("CAN I HAVE IT IN ESV"), Some("ESV".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_show_me_variations() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("show me niv"), Some("NIV".to_string()));
+        assert_eq!(detector.detect_translation_command("show me amplified"), Some("AMP".to_string()));
+        assert_eq!(detector.detect_translation_command("show me the message"), Some("MSG".to_string()));
+    }
+
+    #[test]
+    fn test_translation_command_no_match() {
+        let detector = DirectDetector::new();
+        assert_eq!(detector.detect_translation_command("genesis 3 verse 16"), None);
+        assert_eq!(detector.detect_translation_command("the weather is nice"), None);
+        assert_eq!(detector.detect_translation_command("tell me about the bible"), None);
+    }
+
+    #[test]
+    fn test_translation_command_partial_match() {
+        let detector = DirectDetector::new();
+        // Should match even with extra words
+        assert_eq!(
+            detector.detect_translation_command("i would like to read that in amplified version please"),
+            Some("AMP".to_string())
+        );
+        assert_eq!(
+            detector.detect_translation_command("could you show me that verse in the niv translation"),
+            Some("NIV".to_string())
+        );
+    }
+
+    // ========== Cross-Segment Detection Tests ==========
+
+    #[test]
+    fn test_cross_segment_acts_3_22() {
+        // The exact bug scenario from logs:
+        // "...Acts" → "chapter three..." → "22..."
+        let mut detector = DirectDetector::new();
+
+        // Segment 1: Book-only "Acts"
+        let results = detector.detect("God had put in his mouth. Acts");
+        assert!(results.is_empty());
+        assert!(detector.incomplete.is_some());
+        let inc = detector.incomplete.as_ref().unwrap();
+        assert_eq!(inc.verse_ref.book_name, "Acts");
+        assert!(inc.chapter_is_default);
+
+        // Segment 2: Chapter continuation
+        let results = detector.detect("chapter three, and I'm reading from verse");
+        assert!(results.is_empty()); // ChapterOnly — still waiting for verse
+        assert!(detector.incomplete.is_some());
+        let inc = detector.incomplete.as_ref().unwrap();
+        assert_eq!(inc.verse_ref.chapter, 3);
+        assert!(!inc.chapter_is_default);
+
+        // Segment 3: Verse completion via bare number
+        let results = detector.detect("22. Acts three, for Moses truly");
+        assert!(!results.is_empty());
+        assert_eq!(results[0].verse_ref.book_name, "Acts");
+        assert_eq!(results[0].verse_ref.chapter, 3);
+        assert_eq!(results[0].verse_ref.verse_start, 22);
+    }
+
+    #[test]
+    fn test_cross_segment_chapter_and_verse_combined() {
+        // Book-only → "chapter 3 verse 22" in one segment
+        let mut detector = DirectDetector::new();
+
+        let results = detector.detect("let's read Acts");
+        assert!(results.is_empty());
+
+        let results = detector.detect("chapter 3 verse 22");
+        assert!(!results.is_empty());
+        assert_eq!(results[0].verse_ref.book_name, "Acts");
+        assert_eq!(results[0].verse_ref.chapter, 3);
+        assert_eq!(results[0].verse_ref.verse_start, 22);
+    }
+
+    #[test]
+    fn test_bare_number_as_chapter_after_book_only() {
+        // "Acts" → "3" → "22"
+        let mut detector = DirectDetector::new();
+
+        let results = detector.detect("turn to Acts");
+        assert!(results.is_empty());
+        assert!(detector.incomplete.as_ref().unwrap().chapter_is_default);
+
+        // Bare "3" = chapter (because book-only)
+        let results = detector.detect("3");
+        assert!(results.is_empty());
+        let inc = detector.incomplete.as_ref().unwrap();
+        assert_eq!(inc.verse_ref.chapter, 3);
+
+        // Bare "22" = verse (chapter already set)
+        let results = detector.detect("22");
+        assert!(!results.is_empty());
+        assert_eq!(results[0].verse_ref.chapter, 3);
+        assert_eq!(results[0].verse_ref.verse_start, 22);
+    }
+
+    #[test]
+    fn test_verse_keyword_anywhere_in_text() {
+        // "Genesis 3" → "and I'm reading from verse 15"
+        let mut detector = DirectDetector::new();
+
+        let results = detector.detect("Genesis 3");
+        assert!(results.is_empty());
+
+        let results = detector.detect("and I'm reading from verse 15");
+        assert!(!results.is_empty());
+        assert_eq!(results[0].verse_ref.chapter, 3);
+        assert_eq!(results[0].verse_ref.verse_start, 15);
     }
 }

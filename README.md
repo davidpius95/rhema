@@ -6,7 +6,35 @@ Whether you're a developer, a technical director at a church, or just curious ab
 
 Instead of a media operator scrambling to type out a verse a preacher suddenly references, Rhema automates this by listening to their voice and instantly identifying the scriptures using AI and text matching!
 
+<<<<<<< HEAD
 ---
+=======
+- **Real-time speech-to-text** via local Whisper or cloud Deepgram (WebSocket streaming + REST fallback)
+  - Whisper runs locally with no API costs; Deepgram streams via WebSocket with REST fallback
+- **Voice-controlled translation switching** — say "read in NIV" or "switch to ESV" to change translations instantly during a sermon
+- **Multi-strategy verse detection**
+  - Direct reference parsing (Aho-Corasick automaton + fuzzy matching)
+  - Semantic search (Qwen3-0.6B ONNX embeddings + HNSW vector index)
+  - Quotation matching against known verse text
+  - Cloud booster (optional, OpenAI/Claude)
+  - Reading mode — locks to book/chapter as soon as it's mentioned, with voice navigation ("next chapter", "chapter 5")
+  - Sermon context tracking and sentence buffering
+- **SQLite Bible database** with FTS5 full-text search and BM25 ranking
+- **Multiple translations** — KJV, NIV, ESV, NASB, NKJV, NLT, AMP + Spanish, French, Portuguese
+- **Cross-reference lookup** (340k+ refs from openbible.info)
+- **NDI broadcast output** for live production integration
+- **Theme designer** — visual canvas editor for verse overlays with backgrounds (solid, gradient, image), text styling, positioning, shadows, and outlines
+- **Verse queue** with drag-and-drop ordering and duplicate prevention (flash-highlight on duplicates)
+- **Quick navigation** — keyboard-driven verse entry with autocomplete (e.g., type "J" → Joshua, Tab through book → chapter → verse)
+- **Fuzzy contextual search** (Fuse.js client-side)
+- **Audio level metering**, live indicator, and session timer
+- **Interactive onboarding tutorial** — 11-step guided tour covering all panels, auto-launches on first startup
+- **Light/dark mode** with system theme detection (light, dark, or follow OS)
+- **Settings persistence** — all preferences auto-saved to disk across restarts
+- **Cross-platform** — Windows, macOS, and Linux
+- **Remote control** via OSC and HTTP API for hardware controllers and automation
+  - [Remote control guide](documentation/remote-control.md) — Stream Deck, TouchOSC, REST API integration
+>>>>>>> upstream/main
 
 ## ✨ Features
 
@@ -69,7 +97,16 @@ The backend heavy lifting is divided into **7 custom crates** (sub-projects) wit
 
 ---
 
+<<<<<<< HEAD
 ## 🚀 Step-by-Step Installation
+=======
+- [Bun](https://bun.sh/) (runtime for scripts + package manager)
+- [Rust](https://rustup.rs/) toolchain (stable, 1.77.2+)
+- [Tauri v2 prerequisites](https://v2.tauri.app/start/prerequisites/) (platform-specific system dependencies)
+- [Python 3](https://www.python.org/) (for downloading copyrighted translations and embedding model export)
+- [CMake](https://cmake.org/) (for Whisper local transcription) — install via `brew install cmake`
+- [Deepgram API key](https://deepgram.com/) (optional, for cloud speech-to-text instead of Whisper)
+>>>>>>> upstream/main
 
 Because Rhema relies on external AI models and copyrighted translation downloads, we provide a unified script that fetches everything for you. 
 
@@ -86,14 +123,46 @@ You will need the following tools installed on your computer before starting:
 
 ### 2. Environment Variables
 
+<<<<<<< HEAD
 You need a Speech-To-Text API key. We use Deepgram for blazing-fast transcription.
 Create a file named `.env` in the root of the project folder:
+=======
+This runs 7 phases in sequence, skipping any that are already complete:
+
+1. Python environment setup (`.venv` + all pip dependencies)
+2. Download open-source Bible data (KJV, Spanish, French, Portuguese + cross-references)
+3. Download copyrighted translations from BibleGateway (NIV, ESV, NASB, NKJV, NLT, AMP)
+4. Build SQLite Bible database (`data/rhema.db` with FTS5 + cross-references)
+5. Download & export ONNX model (Qwen3-Embedding-0.6B) + INT8 quantization
+6. Export KJV verses to JSON for embedding
+7. Precompute verse embeddings (auto-selects GPU if available, falls back to ONNX CPU)
+
+### Environment
+
+#### Speech-to-Text Options
+
+Rhema supports two speech-to-text engines:
+
+**Option 1: Whisper (Local, Free)**
+No setup required! Whisper runs locally on your machine with no API costs or internet dependency.
+- Requires CMake: `brew install cmake`
+- Model downloads automatically on first use
+
+**Option 2: Deepgram (Cloud, Paid)**
+Create a `.env` file in the project root:
+>>>>>>> upstream/main
 
 ```
 DEEPGRAM_API_KEY=your_key_here
 ```
 
+<<<<<<< HEAD
 ### 3. Setup and Download Data
+=======
+Get your API key at [deepgram.com](https://deepgram.com/)
+
+### NDI SDK (optional)
+>>>>>>> upstream/main
 
 Open your terminal in the `rhema` folder and run:
 
@@ -162,3 +231,14 @@ For advanced users or if a setup phase failed, you can run individual scripts:
 | `export:verses` | Export verses to JSON for embedding precomputation |
 | `precompute:embeddings` | Precompute embeddings via Rust ONNX binary |
 | `download:ndi-sdk` | Download NDI 6 SDK headers and platform libraries |
+<<<<<<< HEAD
+=======
+
+## Environment Variables
+
+Create a `.env` file in the project root (optional):
+
+| Variable | Required | Description |
+|---|---|---|
+| `DEEPGRAM_API_KEY` | Optional | API key for Deepgram speech-to-text (not needed if using Whisper) |
+>>>>>>> upstream/main

@@ -1,6 +1,6 @@
 use crate::db::BibleDb;
 use crate::error::BibleError;
-use crate::models::{Book, QuotationVerse, SearchVerse, Translation, Verse};
+use crate::models::{Book, SearchVerse, Translation, Verse};
 
 impl BibleDb {
     /// Look up a verse by its database primary key (verses.id).
@@ -132,6 +132,7 @@ impl BibleDb {
         Ok(rows.collect::<Result<Vec<_>, _>>()?)
     }
 
+<<<<<<< HEAD
     /// Load all verses for quotation matching index.
     /// Filters to a specific language if provided.
     pub fn load_all_verses_for_quotation(
@@ -168,6 +169,8 @@ impl BibleDb {
         }
     }
 
+=======
+>>>>>>> upstream/main
     /// Load all verses for one translation for client-side context search indexing.
     pub fn load_translation_verses_for_search(
         &self,

@@ -115,6 +115,7 @@ impl DetectionMerger {
         results
     }
 
+<<<<<<< HEAD
     /// Apply context boosting to a list of detections.
     ///
     /// Boosts confidence for detections in the same book/chapter as
@@ -132,6 +133,8 @@ impl DetectionMerger {
         }
     }
 
+=======
+>>>>>>> upstream/main
     /// Update the minimum confidence threshold.
     pub fn set_confidence_threshold(&mut self, threshold: f64) {
         self.confidence_threshold = threshold;
@@ -180,6 +183,7 @@ mod tests {
             source,
             transcript_snippet: format!("{book_name} {chapter}:{verse_start}"),
             detected_at: 0,
+            is_chapter_only: false,
         }
     }
 
@@ -201,7 +205,7 @@ mod tests {
             3,
             16,
             0.72,
-            DetectionSource::SemanticLocal { similarity: 0.72 },
+            DetectionSource::Semantic { similarity: 0.72 },
         )];
 
         let results = merger.merge(direct, semantic);
@@ -231,7 +235,7 @@ mod tests {
             8,
             28,
             0.65,
-            DetectionSource::SemanticLocal { similarity: 0.65 },
+            DetectionSource::Semantic { similarity: 0.65 },
         )];
 
         let results = merger.merge(direct, semantic);
@@ -253,7 +257,7 @@ mod tests {
                 3,
                 16,
                 0.50,
-                DetectionSource::SemanticLocal { similarity: 0.50 },
+                DetectionSource::Semantic { similarity: 0.50 },
             ),
             make_detection(
                 45,
@@ -261,7 +265,7 @@ mod tests {
                 8,
                 28,
                 0.20, // below 0.35 threshold
-                DetectionSource::SemanticLocal { similarity: 0.20 },
+                DetectionSource::Semantic { similarity: 0.20 },
             ),
         ];
 
@@ -299,7 +303,7 @@ mod tests {
             3,
             16,
             0.50,
-            DetectionSource::SemanticLocal { similarity: 0.50 },
+            DetectionSource::Semantic { similarity: 0.50 },
         )];
 
         let results = merger.merge(vec![], semantic);
@@ -327,7 +331,7 @@ mod tests {
                 8,
                 28,
                 0.95,
-                DetectionSource::SemanticLocal { similarity: 0.95 },
+                DetectionSource::Semantic { similarity: 0.95 },
             ),
             make_detection(
                 1,
@@ -335,7 +339,7 @@ mod tests {
                 1,
                 1,
                 0.60,
-                DetectionSource::SemanticLocal { similarity: 0.60 },
+                DetectionSource::Semantic { similarity: 0.60 },
             ),
         ];
 

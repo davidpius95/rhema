@@ -37,15 +37,16 @@ fn i16_to_f32(samples: &[i16]) -> Vec<f32> {
     reason = "timestamps and word counts are small enough"
 )]
 fn extract_segments(state: &WhisperState) -> (String, Vec<Word>, f64) {
-    let n_segments = state.full_n_segments().unwrap_or(0);
+    let n_segments = state.full_n_segments();
     let mut full_text = String::new();
     let mut words = Vec::new();
     let mut total_confidence: f64 = 0.0;
 
     for i in 0..n_segments {
-        let text = state.full_get_segment_text(i).unwrap_or_default();
-        let start_ts = state.full_get_segment_t0(i).unwrap_or(0);
-        let end_ts = state.full_get_segment_t1(i).unwrap_or(0);
+        let Some(segment) = state.get_segment(i) else { continue; };
+        let text = segment.to_str_lossy().unwrap_or_default().to_string();
+        let start_ts = segment.start_timestamp();
+        let end_ts = segment.end_timestamp();
 
         let start_sec = start_ts as f64 / 100.0;
         let end_sec = end_ts as f64 / 100.0;
@@ -215,7 +216,7 @@ impl SttProvider for WhisperProvider {
         let inf_event_tx = event_tx.clone();
         let inf_handle = tokio::task::spawn_blocking(move || {
             let ctx = match WhisperContext::new_with_params(
-                &model_path.to_string_lossy(),
+                &model_path,
                 WhisperContextParameters::default(),
             ) {
                 Ok(ctx) => ctx,
@@ -258,7 +259,7 @@ impl SttProvider for WhisperProvider {
                 params.set_token_timestamps(true);
                 params.set_no_speech_thold(0.6);
                 params.set_suppress_blank(true);
-                params.set_suppress_non_speech_tokens(true);
+                params.set_suppress_nst(true);
 
                 let start = std::time::Instant::now();
                 if let Err(e) = state.full(params, &audio_f32) {
