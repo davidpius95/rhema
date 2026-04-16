@@ -3,10 +3,8 @@ import { PanelHeader } from "@/components/ui/panel-header"
 import { LevelMeter } from "@/components/ui/level-meter"
 import { Button } from "@/components/ui/button"
 import { ApiKeyPrompt } from "@/components/ui/api-key-prompt"
-import { MicIcon, MicOffIcon, DownloadIcon, Trash2Icon } from "lucide-react"
+import { MicIcon, MicOffIcon } from "lucide-react"
 import { invoke } from "@tauri-apps/api/core"
-import { save } from "@tauri-apps/plugin-dialog"
-import { writeTextFile } from "@tauri-apps/plugin-fs"
 import {
   useAudioStore,
   useDetectionStore,
@@ -197,57 +195,6 @@ export function TranscriptPanel() {
     }
   }, [segments])
 
-  const handleSaveSession = async () => {
-    const segments = useTranscriptStore.getState().segments
-    const detections = useDetectionStore.getState().detections
-
-    if (segments.length === 0 && detections.length === 0) return
-
-    const now = new Date()
-    const dateStr = now.toLocaleDateString()
-    const timeStr = now.toLocaleTimeString()
-
-    let md = `# Session Notes - ${dateStr} ${timeStr}\n\n`
-
-    if (detections.length > 0) {
-      md += `## Bible Verses Detected\n\n`
-      detections.forEach(d => {
-        md += `### ${d.verse_ref}\n> ${d.verse_text}\n\n`
-      })
-    }
-
-    if (segments.length > 0) {
-      md += `## Full Transcript\n\n`
-      segments.forEach(seg => {
-        md += `${seg.text}\n\n`
-      })
-    } else {
-      md += `*No transcript recorded.*\n`
-    }
-
-    try {
-      const filePath = await save({
-        title: "Save Session Notes",
-        defaultPath: `Rhema_Session_${now.toISOString().split('T')[0]}.md`,
-        filters: [{
-          name: 'Markdown',
-          extensions: ['md']
-        }]
-      })
-
-      if (filePath) {
-        await writeTextFile(filePath, md)
-      }
-    } catch (e) {
-      console.error("Failed to save session notes:", e)
-    }
-  }
-
-  const handleClear = () => {
-    useTranscriptStore.getState().clearTranscript()
-    useDetectionStore.getState().clearDetections()
-  }
-
   return (
     <div
       data-slot="transcript-panel"
@@ -314,46 +261,25 @@ export function TranscriptPanel() {
       </div>
 
       {/* Bottom control */}
-      <div className="flex gap-2 border-t border-border px-3 py-2 items-center">
+      <div className="flex flex-wrap gap-2 border-t border-border px-2 py-2 items-center shrink-0">
         {isTranscribing ? (
           <Button
             variant="ghost"
             size="sm"
-            className="text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive shrink-0 px-2"
             onClick={stopTranscription}
           >
-            <MicOffIcon className="size-3" />
-            Stop transcribing
+            <MicOffIcon className="size-4 sm:size-3 sm:mr-1" />
+            <span className="hidden sm:inline">Stop transcribing</span>
           </Button>
         ) : (
-          <Button variant="ghost" size="sm" onClick={startTranscription}>
-              <MicIcon className="size-3" />
-            Start transcribing
+          <Button variant="ghost" size="sm" className="shrink-0 px-2" onClick={startTranscription}>
+              <MicIcon className="size-4 sm:size-3 sm:mr-1" />
+            <span className="hidden sm:inline">Start transcribing</span>
           </Button>
         )}
 
-        <div className="flex-1" />
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={handleSaveSession}
-          title="Save session notes"
-        >
-          <DownloadIcon className="size-3" />
-          Save Notes
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground hover:text-destructive shrink-0"
-          onClick={handleClear}
-          title="Clear session"
-        >
-          <Trash2Icon className="size-3" />
-        </Button>
+        <div className="flex-1 min-w-[10px]" />
       </div>
 
       <ApiKeyPrompt
