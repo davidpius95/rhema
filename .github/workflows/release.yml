@@ -51,14 +51,29 @@ jobs:
         run: bun run download:ndi-sdk
         continue-on-error: true
 
-      # Create empty marker dirs so Tauri's resource bundler never fails on
-      # missing paths. The actual model files may or may not exist.
+      - name: Setup Python (for ONNX model export)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download and export ONNX model (~2.4 GB FP32 + ~571 MB INT8)
+        run: bun run download:model
+
+      - name: Export verses for embedding
+        run: bun run export:verses
+
+      - name: Precompute verse embeddings
+        run: bun run precompute:embeddings
+
+      # Ensure all resource directories exist even if optional steps failed
       - name: Ensure resource directories exist
         shell: bash
         run: |
           mkdir -p models/qwen3-embedding-0.6b
           mkdir -p models/qwen3-embedding-0.6b-int8
+          mkdir -p models/whisper
           mkdir -p embeddings
+          mkdir -p sdk/ndi
 
       # ── Rust toolchain + targets ────────────────────────────────────────
       - name: Install Rust stable

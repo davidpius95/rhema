@@ -39,6 +39,8 @@
     "resources": {
       "../data/rhema.db": "rhema.db",
       "../models/whisper": "models/whisper",
+      "../models/qwen3-embedding-0.6b": "models/qwen3-embedding-0.6b",
+      "../models/qwen3-embedding-0.6b-int8": "models/qwen3-embedding-0.6b-int8",
       "../sdk/ndi": "sdk/ndi",
       "../embeddings": "embeddings"
     },
