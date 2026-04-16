@@ -24,6 +24,11 @@ Instead of a media operator scrambling to type out a verse a preacher suddenly r
 - **Verse queue** with drag-and-drop ordering.
 - **Live UI** — Audio level metering, session timers, and a fuzzy contextual search for manual operation.
 
+- **Speech-to-Text Engines**:
+  - **Cloud:** Deepgram continuous WebSockets for ultra-low latency.
+  - **Local (Streaming):** Sherpa-ONNX Zipformer support for true word-by-word offline streaming with zero latency.
+  - **Local (Offline):** Whisper (large-v3-turbo) fully on-device processing via Apple Metal.
+
 ---
 
 ## 🧠 How Data Flows (The Core Loop)
@@ -31,7 +36,7 @@ Instead of a media operator scrambling to type out a verse a preacher suddenly r
 If a preacher says *"As it says in John chapter 1 verse 1, in the beginning was the Word"*, here is what Rhema does under the hood:
 
 1. **Audio Capture**: The app captures the live microphone or audio feed.
-2. **Speech-to-Text**: The audio is streamed to Deepgram over WebSockets, returning the transcribed text *in milliseconds*.
+2. **Speech-to-Text**: The audio is streamed to your chosen engine (Deepgram, Sherpa, or Whisper) and transcribed.
 3. **Verse Detection**: Rust analyzes the incoming transcribed words. It looks for direct citations ("John 1:1") or contextual quotes (using a locally run ONNX AI model). 
 4. **Database Lookup**: Once a verse is detected, Rhema pulls the exact translation texts (KJV, NIV, NASB, etc.) from the bundled local SQLite database.
 5. **User Interface**: The verse pops up in the React dashboard. The operator sees it in the "Preview Panel" and can push it into a queue or send it live.

@@ -13,12 +13,11 @@ const MIN_WORD_OVERLAP: f64 = 0.50;
 
 /// Common words excluded from matching to prevent false positives.
 const STOP_WORDS: &[&str] = &[
-    "the", "and", "of", "to", "in", "a", "is", "it", "that", "was",
-    "for", "his", "he", "she", "her", "they", "them", "with", "not",
-    "but", "be", "from", "are", "had", "have", "has", "him", "which",
-    "who", "were", "this", "all", "shall", "will", "said", "unto",
-    "upon", "thy", "thee", "thou", "ye", "an", "or", "so", "as",
-    "by", "on", "at", "no", "if", "my", "me", "we", "us", "do",
+    "the", "and", "of", "to", "in", "a", "is", "it", "that", "was", "for", "his", "he", "she",
+    "her", "they", "them", "with", "not", "but", "be", "from", "are", "had", "have", "has", "him",
+    "which", "who", "were", "this", "all", "shall", "will", "said", "unto", "upon", "thy", "thee",
+    "thou", "ye", "an", "or", "so", "as", "by", "on", "at", "no", "if", "my", "me", "we", "us",
+    "do",
 ];
 
 /// Maximum results to return per query.
@@ -148,7 +147,10 @@ impl QuotationMatcher {
                 // Score candidates by word overlap
                 for (idx, hit_count) in verse_hits {
                     let verse = &self.verses[idx];
-                    #[expect(clippy::cast_precision_loss, reason = "word counts are small enough for f64 precision")]
+                    #[expect(
+                        clippy::cast_precision_loss,
+                        reason = "word counts are small enough for f64 precision"
+                    )]
                     let overlap = hit_count as f64 / verse.word_count as f64;
                     if overlap >= MIN_WORD_OVERLAP {
                         let existing = candidates.entry(idx).or_insert(0.0);
@@ -165,7 +167,10 @@ impl QuotationMatcher {
         results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         results.truncate(MAX_RESULTS);
 
-        #[expect(clippy::cast_possible_truncation, reason = "timestamp millis won't exceed u64 for centuries")]
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "timestamp millis won't exceed u64 for centuries"
+        )]
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap_or_default()
@@ -189,7 +194,9 @@ impl QuotationMatcher {
                     },
                     verse_id: Some(verse.verse_id),
                     confidence,
-                    source: DetectionSource::QuotationMatch { similarity: overlap },
+                    source: DetectionSource::QuotationMatch {
+                        similarity: overlap,
+                    },
                     transcript_snippet: text.to_string(),
                     detected_at: now,
                 }
@@ -266,9 +273,8 @@ mod tests {
     #[test]
     fn test_match_john_316() {
         let matcher = QuotationMatcher::build(sample_verses());
-        let results = matcher.match_transcript(
-            "For God so loved the world that he gave his only begotten Son"
-        );
+        let results = matcher
+            .match_transcript("For God so loved the world that he gave his only begotten Son");
         assert!(!results.is_empty());
         assert_eq!(results[0].verse_ref.book_name, "John");
         assert_eq!(results[0].verse_ref.chapter, 3);
@@ -296,9 +302,8 @@ mod tests {
     #[test]
     fn test_no_match() {
         let matcher = QuotationMatcher::build(sample_verses());
-        let results = matcher.match_transcript(
-            "the weather is nice today and I went to the store to buy groceries"
-        );
+        let results = matcher
+            .match_transcript("the weather is nice today and I went to the store to buy groceries");
         assert!(results.is_empty());
     }
 

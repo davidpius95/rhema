@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2200" viewBox="0 0 1600 2200">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    </marker>
+    <marker id="arrow-bright" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrow-dashed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="2200" fill="#0f1117"/>
+
+  <!-- TITLE -->
+  <text x="800" y="42" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="26" font-weight="700" fill="#f1f5f9" text-anchor="middle">Rhema — Real-Time AI Bible Detection Architecture</text>
+  <text x="800" y="66" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" fill="#64748b" text-anchor="middle">Tauri v2 (Rust) + React 19 (TypeScript) | Audio → STT → Detection → Display Pipeline</text>
+  <line x1="130" y1="78" x2="1570" y2="78" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- LAYER BAND BACKGROUNDS -->
+  <rect x="130" y="80"   width="1440" height="120" fill="#1e3a5f" rx="4" opacity="0.25"/>
+  <rect x="130" y="200"  width="1440" height="160" fill="#3d2b0f" rx="4" opacity="0.25"/>
+  <rect x="130" y="360"  width="1440" height="170" fill="#1a3d3a" rx="4" opacity="0.25"/>
+  <rect x="130" y="530"  width="1440" height="120" fill="#3d2b0f" rx="4" opacity="0.25"/>
+  <rect x="130" y="650"  width="1440" height="240" fill="#2d1a4a" rx="4" opacity="0.25"/>
+  <rect x="130" y="890"  width="1440" height="110" fill="#3a2060" rx="4" opacity="0.25"/>
+  <rect x="130" y="1000" width="1440" height="110" fill="#1a3d1a" rx="4" opacity="0.25"/>
+  <rect x="130" y="1110" width="1440" height="90"  fill="#2a2a3a" rx="4" opacity="0.35"/>
+  <rect x="130" y="1200" width="1440" height="380" fill="#1a1a4a" rx="4" opacity="0.25"/>
+  <rect x="130" y="1580" width="1440" height="150" fill="#3d1a1a" rx="4" opacity="0.25"/>
+
+  <!-- LEFT GUTTER LABELS -->
+  <text transform="translate(65,140) rotate(-90)"  font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#3b82f6"  text-anchor="middle">INPUT</text>
+  <text transform="translate(65,280) rotate(-90)"  font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#f97316"  text-anchor="middle">AUDIO ENGINE</text>
+  <text transform="translate(65,445) rotate(-90)"  font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#14b8a6"  text-anchor="middle">STT PROVIDERS</text>
+  <text transform="translate(65,590) rotate(-90)"  font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#f97316"  text-anchor="middle">TRANSCRIPT</text>
+  <text transform="translate(65,770) rotate(-90)"  font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#a855f7"  text-anchor="middle">DETECTION</text>
+  <text transform="translate(65,945) rotate(-90)"  font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#a855f7"  text-anchor="middle">MERGER</text>
+  <text transform="translate(65,1055) rotate(-90)" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#22c55e"  text-anchor="middle">DATABASE</text>
+  <text transform="translate(65,1155) rotate(-90)" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#94a3b8"  text-anchor="middle">IPC BRIDGE</text>
+  <text transform="translate(65,1390) rotate(-90)" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#818cf8"  text-anchor="middle">REACT FRONTEND</text>
+  <text transform="translate(65,1655) rotate(-90)" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" font-weight="600" letter-spacing="1.5" fill="#ef4444"  text-anchor="middle">OUTPUT</text>
+
+  <!-- ═══ LAYER 1: INPUT ═══ -->
+  <rect x="550" y="98" width="500" height="84" fill="#1e3a5f" stroke="#2563eb" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <text x="800" y="130" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="16" font-weight="700" fill="#93c5fd" text-anchor="middle">🎤  Microphone / Audio Input</text>
+  <text x="800" y="154" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#bfdbfe" text-anchor="middle">Raw PCM 16 kHz · Mono · cpal device enumeration · user-selected device</text>
+
+  <!-- arrow Mic → Audio -->
+  <path d="M 800 182 L 800 208" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="814" y="199" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">PCM samples</text>
+
+  <!-- ═══ LAYER 2: AUDIO ENGINE ═══ -->
+  <!-- Audio Capture box -->
+  <rect x="155" y="215" width="560" height="120" fill="#3d2b0f" stroke="#92400e" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="618" y="221" width="90" height="20" fill="#7c3a00" rx="10"/>
+  <text x="663" y="235" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#fed7aa" text-anchor="middle">rhema-audio</text>
+  <text x="435" y="255" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#fdba74" text-anchor="middle">Audio Capture (cpal)</text>
+  <text x="435" y="276" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#fcd34d" text-anchor="middle">Gain normalization · 16 kHz mono PCM stream</text>
+  <text x="435" y="296" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#d97706" text-anchor="middle">Emits: audio_level events (rms, peak) @ 15 Hz</text>
+  <text x="435" y="314" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#d97706" text-anchor="middle">crossbeam channel → STT worker thread</text>
+
+  <!-- VAD box -->
+  <rect x="785" y="215" width="420" height="120" fill="#3d2b0f" stroke="#78350f" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1108" y="221" width="90" height="20" fill="#7c3a00" rx="10"/>
+  <text x="1153" y="235" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#fed7aa" text-anchor="middle">vad.rs</text>
+  <text x="995" y="255" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#fdba74" text-anchor="middle">Voice Activity Detection</text>
+  <text x="995" y="276" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#fcd34d" text-anchor="middle">Energy threshold · silence gating</text>
+  <text x="995" y="296" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#d97706" text-anchor="middle">Chunks audio for local Whisper</text>
+  <text x="995" y="314" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#d97706" text-anchor="middle">meter.rs · audio level metering</text>
+
+  <!-- arrow Audio Capture → VAD -->
+  <path d="M 715 275 L 785 275" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="724" y="268" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#94a3b8">samples</text>
+
+  <!-- arrows Audio Engine → STT providers -->
+  <path d="M 300 335 Q 300 362 290 370" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 600 335 Q 600 362 800 370" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 995 335 Q 995 362 1252 370" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- ═══ LAYER 3: STT PROVIDERS ═══ -->
+  <!-- Deepgram -->
+  <rect x="155" y="370" width="375" height="142" fill="#1a3d3a" stroke="#0d9488" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="160" y="376" width="80" height="20" fill="#0f766e" rx="10"/>
+  <text x="200" y="390" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ccfbf1" text-anchor="middle">☁ Cloud API</text>
+  <rect x="425" y="376" width="95" height="20" fill="#0f766e" rx="10"/>
+  <text x="472" y="390" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ccfbf1" text-anchor="middle">rhema-stt</text>
+  <text x="343" y="416" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#5eead4" text-anchor="middle">Deepgram STT</text>
+  <text x="343" y="437" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#99f6e4" text-anchor="middle">WebSocket Streaming API</text>
+  <text x="343" y="456" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">Partial + Final transcripts</text>
+  <text x="343" y="474" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">nova-3 model · keyterm boosting</text>
+  <text x="343" y="492" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#4ade80" text-anchor="middle">deepgram.rs · deepgram_connection()</text>
+
+  <!-- Sherpa -->
+  <rect x="612" y="370" width="375" height="142" fill="#1a3d3a" stroke="#0d9488" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="882" y="376" width="100" height="20" fill="#0f766e" rx="10"/>
+  <text x="932" y="390" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ccfbf1" text-anchor="middle">sherpa-onnx</text>
+  <text x="800" y="416" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#5eead4" text-anchor="middle">Sherpa-ONNX STT</text>
+  <text x="800" y="437" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#99f6e4" text-anchor="middle">Local Streaming ONNX</text>
+  <text x="800" y="456" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">Real-time token streaming</text>
+  <text x="800" y="474" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">sherpa.rs · offline capable</text>
+  <text x="800" y="492" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#4ade80" text-anchor="middle">Optional feature flag · no cloud needed</text>
+
+  <!-- Whisper -->
+  <rect x="1065" y="370" width="375" height="142" fill="#1a3d3a" stroke="#0d9488" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1330" y="376" width="105" height="20" fill="#0f766e" rx="10"/>
+  <text x="1382" y="390" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ccfbf1" text-anchor="middle">whisper.cpp</text>
+  <text x="1252" y="416" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#5eead4" text-anchor="middle">Whisper (Local)</text>
+  <text x="1252" y="437" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#99f6e4" text-anchor="middle">Offline ONNX Inference</text>
+  <text x="1252" y="456" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">VAD-gated audio chunks</text>
+  <text x="1252" y="474" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">whisper.rs · Final text only</text>
+  <text x="1252" y="492" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#4ade80" text-anchor="middle">Local model download required</text>
+
+  <!-- arrows STT → Transcript Consumer (converging) -->
+  <path d="M 343 512 Q 343 542 590 548" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="352" y="538" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">partial/final</text>
+  <path d="M 800 512 L 800 548" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="808" y="532" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">tokens</text>
+  <path d="M 1252 512 Q 1252 542 1010 548" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="1148" y="538" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">final chunks</text>
+
+  <!-- ═══ LAYER 4: TRANSCRIPT CONSUMER ═══ -->
+  <rect x="210" y="548" width="1180" height="88" fill="#3d2b0f" stroke="#92400e" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1228" y="554" width="155" height="20" fill="#7c3a00" rx="10"/>
+  <text x="1305" y="568" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#fed7aa" text-anchor="middle">commands/stt.rs</text>
+  <text x="800" y="583" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#fdba74" text-anchor="middle">Transcript Consumer (Tokio async)</text>
+  <text x="800" y="604" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#fcd34d" text-anchor="middle">Routes partial/final events · SentenceBuffer (120-char max) · Tauri event emission</text>
+  <text x="800" y="623" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#d97706" text-anchor="middle">Emits: transcript_partial · transcript_final · stt_connected · stt_error · stt_speech_started</text>
+
+  <!-- arrow Transcript → Detection -->
+  <path d="M 800 636 L 800 658" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="814" y="651" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">transcript text</text>
+
+  <!-- ═══ LAYER 5: DETECTION PIPELINE ═══ -->
+  <text x="800" y="676" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-style="italic" fill="#c084fc" text-anchor="middle">DetectionPipeline — 3 parallel strategies (rhema-detection)</text>
+
+  <!-- Direct Detector -->
+  <rect x="155" y="686" width="380" height="185" fill="#2d1a4a" stroke="#7c3aed" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="413" y="692" width="115" height="20" fill="#4c1d95" rx="10"/>
+  <text x="470" y="706" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ddd6fe" text-anchor="middle">direct/detector.rs</text>
+  <text x="345" y="730" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#c084fc" text-anchor="middle">Direct Detector</text>
+  <text x="345" y="752" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#d8b4fe" text-anchor="middle">Regex + Aho-Corasick automaton</text>
+  <text x="345" y="772" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#c4b5fd" text-anchor="middle">Book name pattern matching</text>
+  <text x="345" y="791" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#c4b5fd" text-anchor="middle">"John 3:16" → instant detect</text>
+  <text x="345" y="810" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#a78bfa" text-anchor="middle">SermonContext book boost</text>
+  <text x="345" y="829" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#8b5cf6" text-anchor="middle">Confidence: ~0.95 · ~0ms latency</text>
+  <text x="345" y="848" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#8b5cf6" text-anchor="middle">source: DirectReference</text>
+
+  <!-- Quotation Matcher -->
+  <rect x="610" y="686" width="380" height="185" fill="#2d1a4a" stroke="#7c3aed" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="868" y="692" width="115" height="20" fill="#4c1d95" rx="10"/>
+  <text x="925" y="706" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ddd6fe" text-anchor="middle">quotation.rs</text>
+  <text x="800" y="730" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#c084fc" text-anchor="middle">Quotation Matcher</text>
+  <text x="800" y="752" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#d8b4fe" text-anchor="middle">FTS5 Inverted Word Index</text>
+  <text x="800" y="772" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#c4b5fd" text-anchor="middle">Phrase proximity scoring</text>
+  <text x="800" y="791" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#c4b5fd" text-anchor="middle">SQLite FTS5 full-text search</text>
+  <text x="800" y="810" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#a78bfa" text-anchor="middle">Verse text similarity lookup</text>
+  <text x="800" y="829" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#8b5cf6" text-anchor="middle">QuotationMatcher struct</text>
+  <text x="800" y="848" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#8b5cf6" text-anchor="middle">source: QuotationMatch</text>
+
+  <!-- Semantic Detector -->
+  <rect x="1065" y="686" width="380" height="185" fill="#2d1a4a" stroke="#7c3aed" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1313" y="692" width="125" height="20" fill="#4c1d95" rx="10"/>
+  <text x="1375" y="706" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ddd6fe" text-anchor="middle">semantic/detector.rs</text>
+  <text x="1255" y="730" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#c084fc" text-anchor="middle">Semantic Detector</text>
+  <text x="1255" y="752" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#d8b4fe" text-anchor="middle">Qwen3 0.6B ONNX Model</text>
+  <text x="1255" y="772" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#c4b5fd" text-anchor="middle">768-dim sentence embeddings</text>
+  <text x="1255" y="791" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#c4b5fd" text-anchor="middle">HNSW approximate NN search</text>
+  <text x="1255" y="810" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#a78bfa" text-anchor="middle">31k pre-computed embeddings</text>
+  <text x="1255" y="829" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#8b5cf6" text-anchor="middle">OnnxEmbedder + HnswVectorIndex</text>
+  <text x="1255" y="848" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#8b5cf6" text-anchor="middle">50–400ms · source: SemanticLocal</text>
+
+  <!-- arrows Detection → Merger (converging) -->
+  <path d="M 345 871 Q 345 902 590 906" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 800 871 L 800 906" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1255 871 Q 1255 902 1010 906" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- ═══ LAYER 6: DETECTION MERGER ═══ -->
+  <rect x="250" y="900" width="1100" height="88" fill="#3a2060" stroke="#7c3aed" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1238" y="906" width="102" height="20" fill="#4c1d95" rx="10"/>
+  <text x="1289" y="920" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#ddd6fe" text-anchor="middle">merger.rs</text>
+  <text x="800" y="932" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#d8b4fe" text-anchor="middle">Detection Merger</text>
+  <text x="800" y="954" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#c4b5fd" text-anchor="middle">Deduplication · 2.5s cooldown · Confidence ranking · SermonContext book/chapter boost</text>
+  <text x="800" y="974" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#a78bfa" text-anchor="middle">Threshold: 0.45 drop · 0.80 auto-queue · active_translation_id · context.rs</text>
+
+  <!-- arrow Merger → Bible DB -->
+  <path d="M 800 988 L 800 1008" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="814" y="1002" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">verse_id lookup</text>
+
+  <!-- ═══ LAYER 7: BIBLE DATABASE ═══ -->
+  <!-- Bible DB -->
+  <rect x="155" y="1012" width="770" height="86" fill="#1a3d1a" stroke="#166534" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="812" y="1018" width="105" height="20" fill="#14532d" rx="10"/>
+  <text x="864" y="1032" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#bbf7d0" text-anchor="middle">rhema-bible</text>
+  <text x="540" y="1050" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#86efac" text-anchor="middle">Bible Database (SQLite)</text>
+  <text x="540" y="1071" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#bbf7d0" text-anchor="middle">10+ translations · 31,102 verses · KJV/ESV/NIV</text>
+  <text x="540" y="1089" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">FTS5 full-text search · Cross-references · bible.rs commands</text>
+
+  <!-- HNSW Vector Index -->
+  <rect x="980" y="1012" width="460" height="86" fill="#14532d" stroke="#166534" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1325" y="1018" width="110" height="20" fill="#0f4023" rx="10"/>
+  <text x="1380" y="1032" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#bbf7d0" text-anchor="middle">hnsw_index.rs</text>
+  <text x="1210" y="1050" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="14" font-weight="700" fill="#86efac" text-anchor="middle">HNSW Vector Index</text>
+  <text x="1210" y="1071" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#bbf7d0" text-anchor="middle">31k verse embeddings (768-dim)</text>
+  <text x="1210" y="1089" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#6ee7b7" text-anchor="middle">ANN lookup · vector-search feature</text>
+
+  <!-- arrow DB ↔ HNSW -->
+  <path d="M 925 1055 L 980 1055" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="930" y="1048" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#94a3b8">ANN</text>
+
+  <!-- arrow Bible DB → IPC Bridge -->
+  <path d="M 540 1098 Q 540 1112 800 1122" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="548" y="1114" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b">DetectionResult</text>
+
+  <!-- ═══ LAYER 8: TAURI IPC BRIDGE ═══ -->
+  <rect x="155" y="1118" width="1290" height="70" fill="#2a2a3a" stroke="#475569" stroke-width="2" rx="8" filter="url(#glow)"/>
+  <line x1="800" y1="1122" x2="800" y2="1184" stroke="#475569" stroke-dasharray="4" stroke-width="1"/>
+  <rect x="1338" y="1124" width="100" height="20" fill="#334155" rx="10"/>
+  <text x="1388" y="1138" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#e2e8f0" text-anchor="middle">Rust ↕ TypeScript</text>
+  <text x="470" y="1146" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="14" font-weight="700" fill="#cbd5e1" text-anchor="middle">Tauri Commands (invoke)</text>
+  <text x="470" y="1168" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">Frontend RPC → Rust · audio · stt · detection · bible · broadcast · remote</text>
+  <text x="1100" y="1146" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="14" font-weight="700" fill="#cbd5e1" text-anchor="middle">Tauri Event Bus (emit)</text>
+  <text x="1100" y="1168" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">Rust push → Frontend · audio_level · transcript_* · verse_detections · stt_*</text>
+
+  <!-- arrow IPC → React stores -->
+  <path d="M 800 1188 L 800 1218" stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow-bright)"/>
+  <text x="814" y="1208" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#94a3b8">events + results</text>
+
+  <!-- ═══ LAYER 9a: ZUSTAND STORES ═══ -->
+  <text x="800" y="1232" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#818cf8" text-anchor="middle">Zustand State Stores</text>
+
+  <!-- 8 store boxes, each 165px wide, gap ~5px, starting x=140 -->
+  <rect x="140"  y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="221"  y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useAudioStore</text>
+  <text x="221"  y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">isRecording · level</text>
+  <text x="221"  y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">deviceInfo · gain</text>
+  <text x="221"  y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">audio-store.ts</text>
+
+  <rect x="310"  y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="391"  y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useTranscriptStore</text>
+  <text x="391"  y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">segments · partials</text>
+  <text x="391"  y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">isConnected · buffer</text>
+  <text x="391"  y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">transcript-store.ts</text>
+
+  <rect x="480"  y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="561"  y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useDetectionStore</text>
+  <text x="561"  y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">results · threshold</text>
+  <text x="561"  y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">autoMode · context</text>
+  <text x="561"  y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">detection-store.ts</text>
+
+  <rect x="650"  y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="731"  y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useBibleStore</text>
+  <text x="731"  y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">translations · books</text>
+  <text x="731"  y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">searchResults · verse</text>
+  <text x="731"  y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">bible-store.ts</text>
+
+  <rect x="820"  y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="901"  y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useSettingsStore</text>
+  <text x="901"  y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">sttProvider · apiKey</text>
+  <text x="901"  y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">threshold · cooldown</text>
+  <text x="901"  y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">settings-store.ts</text>
+
+  <rect x="990"  y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="1071" y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useBroadcastStore</text>
+  <text x="1071" y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">themes · activeTheme</text>
+  <text x="1071" y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">ndiStatus · canvas</text>
+  <text x="1071" y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">broadcast-store.ts</text>
+
+  <rect x="1160" y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="1241" y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useQueueStore</text>
+  <text x="1241" y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">items · history</text>
+  <text x="1241" y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">displayCurrent</text>
+  <text x="1241" y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">queue-store.ts</text>
+
+  <rect x="1330" y="1242" width="162" height="90" fill="#1e1e5a" stroke="#4338ca" stroke-width="1" rx="6"/>
+  <text x="1411" y="1263" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" font-weight="700" fill="#a5b4fc" text-anchor="middle">useTutorialStore</text>
+  <text x="1411" y="1280" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">step · completed</text>
+  <text x="1411" y="1295" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#818cf8" text-anchor="middle">tourActive</text>
+  <text x="1411" y="1321" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9"  fill="#6366f1" text-anchor="middle">tutorial-store.ts</text>
+
+  <!-- arrows Stores → Components -->
+  <path d="M 360 1332 L 360 1360" stroke="#4338ca" stroke-width="1" fill="none" marker-end="url(#arrow-bright)"/>
+  <path d="M 560 1332 L 560 1360" stroke="#4338ca" stroke-width="1" fill="none" marker-end="url(#arrow-bright)"/>
+  <path d="M 760 1332 L 760 1360" stroke="#4338ca" stroke-width="1" fill="none" marker-end="url(#arrow-bright)"/>
+  <path d="M 960 1332 L 960 1360" stroke="#4338ca" stroke-width="1" fill="none" marker-end="url(#arrow-bright)"/>
+  <path d="M 1160 1332 L 1160 1360" stroke="#4338ca" stroke-width="1" fill="none" marker-end="url(#arrow-bright)"/>
+  <line x1="140" y1="1350" x2="1492" y2="1350" stroke="#2d2d5a" stroke-width="1" stroke-dasharray="4"/>
+
+  <!-- ═══ LAYER 9b: UI COMPONENTS ═══ -->
+  <text x="800" y="1373" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#818cf8" text-anchor="middle">React Components (src/components/)</text>
+
+  <!-- DetectionsPanel -->
+  <rect x="140" y="1383" width="215" height="170" fill="#1e1e5a" stroke="#4338ca" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="255" y="1389" width="92" height="20" fill="#312e81" rx="10"/>
+  <text x="301" y="1403" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#c7d2fe" text-anchor="middle">panels/</text>
+  <text x="247" y="1424" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#a5b4fc" text-anchor="middle">DetectionsPanel</text>
+  <text x="247" y="1444" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Verse results list</text>
+  <text x="247" y="1462" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Confidence badges</text>
+  <text x="247" y="1480" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Auto-queue trigger</text>
+  <text x="247" y="1498" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Source indicator</text>
+  <text x="247" y="1525" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#6366f1" text-anchor="middle">detections-panel.tsx</text>
+  <text x="247" y="1543" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#6366f1" text-anchor="middle">verse_detections event</text>
+
+  <!-- TranscriptPanel -->
+  <rect x="365" y="1383" width="215" height="170" fill="#1e1e5a" stroke="#4338ca" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="480" y="1389" width="92" height="20" fill="#312e81" rx="10"/>
+  <text x="526" y="1403" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#c7d2fe" text-anchor="middle">panels/</text>
+  <text x="472" y="1424" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#a5b4fc" text-anchor="middle">TranscriptPanel</text>
+  <text x="472" y="1444" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Live transcript stream</text>
+  <text x="472" y="1462" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Partial/final display</text>
+  <text x="472" y="1480" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Keyword highlights</text>
+  <text x="472" y="1498" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">useTranscription hook</text>
+  <text x="472" y="1525" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#6366f1" text-anchor="middle">transcript-panel.tsx</text>
+
+  <!-- SearchPanel -->
+  <rect x="590" y="1383" width="215" height="170" fill="#1e1e5a" stroke="#4338ca" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="705" y="1389" width="92" height="20" fill="#312e81" rx="10"/>
+  <text x="751" y="1403" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#c7d2fe" text-anchor="middle">panels/</text>
+  <text x="697" y="1424" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#a5b4fc" text-anchor="middle">SearchPanel</text>
+  <text x="697" y="1444" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Manual verse lookup</text>
+  <text x="697" y="1462" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">FTS5 search UI</text>
+  <text x="697" y="1480" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Cross-reference browser</text>
+  <text x="697" y="1498" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">useBible hook</text>
+  <text x="697" y="1525" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#6366f1" text-anchor="middle">search-panel.tsx</text>
+
+  <!-- QueuePanel -->
+  <rect x="815" y="1383" width="215" height="170" fill="#1e1e5a" stroke="#4338ca" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="930" y="1389" width="92" height="20" fill="#312e81" rx="10"/>
+  <text x="976" y="1403" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#c7d2fe" text-anchor="middle">panels/</text>
+  <text x="922" y="1424" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#a5b4fc" text-anchor="middle">QueuePanel</text>
+  <text x="922" y="1444" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Display queue manager</text>
+  <text x="922" y="1462" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Verse order control</text>
+  <text x="922" y="1480" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">History view</text>
+  <text x="922" y="1498" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">useQueue hook</text>
+  <text x="922" y="1525" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#6366f1" text-anchor="middle">queue-panel.tsx</text>
+
+  <!-- LiveOutputPanel -->
+  <rect x="1040" y="1383" width="215" height="170" fill="#1e1e5a" stroke="#4338ca" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1155" y="1389" width="92" height="20" fill="#312e81" rx="10"/>
+  <text x="1201" y="1403" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#c7d2fe" text-anchor="middle">panels/</text>
+  <text x="1147" y="1424" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#a5b4fc" text-anchor="middle">LiveOutputPanel</text>
+  <text x="1147" y="1444" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Canvas preview</text>
+  <text x="1147" y="1462" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Theme hot-reload</text>
+  <text x="1147" y="1480" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">NDI output status</text>
+  <text x="1147" y="1498" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">useBroadcast hook</text>
+  <text x="1147" y="1525" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#6366f1" text-anchor="middle">live-output-panel.tsx</text>
+
+  <!-- ThemeEditor -->
+  <rect x="1265" y="1383" width="225" height="170" fill="#1e1e5a" stroke="#4338ca" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1390" y="1389" width="92" height="20" fill="#312e81" rx="10"/>
+  <text x="1436" y="1403" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#c7d2fe" text-anchor="middle">broadcast/</text>
+  <text x="1377" y="1424" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="700" fill="#a5b4fc" text-anchor="middle">ThemeEditor</text>
+  <text x="1377" y="1444" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">HTML5 Canvas Renderer</text>
+  <text x="1377" y="1462" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Verse overlays · fonts</text>
+  <text x="1377" y="1480" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">Custom color · layout</text>
+  <text x="1377" y="1498" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#818cf8" text-anchor="middle">→ NDI frame buffer</text>
+  <text x="1377" y="1525" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#6366f1" text-anchor="middle">broadcast-output.tsx</text>
+
+  <!-- arrows Components → Output -->
+  <path d="M 1147 1553 Q 1147 1572 800 1600" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <path d="M 1377 1553 L 1377 1596" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- ═══ LAYER 10: OUTPUT ═══ -->
+  <!-- NDI Broadcast -->
+  <rect x="155" y="1596" width="390" height="116" fill="#3d1a1a" stroke="#dc2626" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="415" y="1602" width="122" height="20" fill="#7f1d1d" rx="10"/>
+  <text x="476" y="1616" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#fecaca" text-anchor="middle">rhema-broadcast</text>
+  <text x="350" y="1637" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#fca5a5" text-anchor="middle">NDI Network Video</text>
+  <text x="350" y="1657" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#fecaca" text-anchor="middle">NDI SDK · Alpha channel support</text>
+  <text x="350" y="1676" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#f87171" text-anchor="middle">OBS · vMix · broadcast receivers</text>
+  <text x="350" y="1694" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#ef4444" text-anchor="middle">ndi.rs · push_ndi_frame command</text>
+
+  <!-- Remote Control API -->
+  <rect x="605" y="1596" width="390" height="116" fill="#3d1a1a" stroke="#dc2626" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="865" y="1602" width="122" height="20" fill="#7f1d1d" rx="10"/>
+  <text x="926" y="1616" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#fecaca" text-anchor="middle">rhema-api · axum</text>
+  <text x="800" y="1637" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#fca5a5" text-anchor="middle">Remote Control API</text>
+  <text x="800" y="1657" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#fecaca" text-anchor="middle">Axum HTTP + OSC UDP server</text>
+  <text x="800" y="1676" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#f87171" text-anchor="middle">External lighting / media control</text>
+  <text x="800" y="1694" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#ef4444" text-anchor="middle">osc.rs · http.rs · command.rs</text>
+
+  <!-- Canvas Renderer -->
+  <rect x="1055" y="1596" width="390" height="116" fill="#3d1a1a" stroke="#dc2626" stroke-width="1.5" rx="8" filter="url(#shadow)"/>
+  <rect x="1315" y="1602" width="122" height="20" fill="#7f1d1d" rx="10"/>
+  <text x="1376" y="1616" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" font-weight="600" fill="#fecaca" text-anchor="middle">broadcast-output</text>
+  <text x="1250" y="1637" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="15" font-weight="700" fill="#fca5a5" text-anchor="middle">Canvas Renderer</text>
+  <text x="1250" y="1657" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#fecaca" text-anchor="middle">HTML5 Canvas API</text>
+  <text x="1250" y="1676" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#f87171" text-anchor="middle">Verse overlays · custom themes</text>
+  <text x="1250" y="1694" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#ef4444" text-anchor="middle">ThemeEditor → pixel frame buffer</text>
+
+  <!-- arrows Output → External -->
+  <path d="M 350 1712 L 350 1762" stroke="#475569" stroke-width="1.5" stroke-dasharray="5" fill="none" marker-end="url(#arrow-dashed)"/>
+  <path d="M 1250 1712 L 1250 1762" stroke="#475569" stroke-width="1.5" stroke-dasharray="5" fill="none" marker-end="url(#arrow-dashed)"/>
+
+  <!-- ═══ EXTERNAL SERVICES ═══ -->
+  <text x="800" y="1754" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#64748b" text-anchor="middle">External Services / Hardware SDKs</text>
+
+  <rect x="155"  y="1762" width="380" height="52" fill="#252535" stroke="#475569" stroke-width="1" stroke-dasharray="5" rx="6"/>
+  <text x="345"  y="1786" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="#94a3b8" text-anchor="middle">☁ Deepgram Cloud API</text>
+  <text x="345"  y="1804" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">api.deepgram.com · nova-3 · DEEPGRAM_API_KEY</text>
+
+  <rect x="610"  y="1762" width="380" height="52" fill="#252535" stroke="#475569" stroke-width="1" stroke-dasharray="5" rx="6"/>
+  <text x="800"  y="1786" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="#94a3b8" text-anchor="middle">NDI SDK (Newtek/Vizrt)</text>
+  <text x="800"  y="1804" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Runtime-loaded via libloading · optional at build time</text>
+
+  <rect x="1065" y="1762" width="380" height="52" fill="#252535" stroke="#475569" stroke-width="1" stroke-dasharray="5" rx="6"/>
+  <text x="1255" y="1786" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="13" font-weight="600" fill="#94a3b8" text-anchor="middle">Host OS Audio (cpal)</text>
+  <text x="1255" y="1804" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">CoreAudio (macOS) · WASAPI (Windows)</text>
+
+  <!-- Right-rail dashed connector: Deepgram STT box → Deepgram Cloud external -->
+  <path d="M 530 512 L 1556 512 L 1556 1788 L 535 1788" stroke="#374151" stroke-width="1" stroke-dasharray="6" fill="none" marker-end="url(#arrow-dashed)"/>
+  <text transform="translate(1562,1155) rotate(90)" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="9" fill="#374151" text-anchor="middle">Deepgram WebSocket Cloud</text>
+
+  <!-- ═══ LEGEND ═══ -->
+  <rect x="155" y="1840" width="1290" height="298" fill="#131620" stroke="#2a2a3a" stroke-width="1" rx="12"/>
+  <text x="800" y="1872" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="16" font-weight="700" fill="#e2e8f0" text-anchor="middle">Legend</text>
+  <line x1="195" y1="1884" x2="1415" y2="1884" stroke="#2a2a3a" stroke-width="1"/>
+
+  <!-- Color key row 1 -->
+  <rect x="200" y="1896" width="18" height="18" fill="#1e3a5f" rx="4" stroke="#2563eb" stroke-width="1"/>
+  <text x="226" y="1909" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">Input Layer</text>
+  <rect x="370" y="1896" width="18" height="18" fill="#3d2b0f" rx="4" stroke="#92400e" stroke-width="1"/>
+  <text x="396" y="1909" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">Rust Audio / Transcript</text>
+  <rect x="590" y="1896" width="18" height="18" fill="#1a3d3a" rx="4" stroke="#0d9488" stroke-width="1"/>
+  <text x="616" y="1909" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">STT Providers</text>
+  <rect x="780" y="1896" width="18" height="18" fill="#2d1a4a" rx="4" stroke="#7c3aed" stroke-width="1"/>
+  <text x="806" y="1909" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">Detection Pipeline</text>
+
+  <!-- Color key row 2 -->
+  <rect x="200" y="1932" width="18" height="18" fill="#1a3d1a" rx="4" stroke="#166534" stroke-width="1"/>
+  <text x="226" y="1945" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">Bible Database</text>
+  <rect x="370" y="1932" width="18" height="18" fill="#2a2a3a" rx="4" stroke="#475569" stroke-width="1"/>
+  <text x="396" y="1945" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">Tauri IPC Bridge</text>
+  <rect x="590" y="1932" width="18" height="18" fill="#1a1a4a" rx="4" stroke="#4338ca" stroke-width="1"/>
+  <text x="616" y="1945" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">React Frontend</text>
+  <rect x="780" y="1932" width="18" height="18" fill="#3d1a1a" rx="4" stroke="#dc2626" stroke-width="1"/>
+  <text x="806" y="1945" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">Output Layer</text>
+  <rect x="980" y="1932" width="18" height="18" fill="#252535" rx="4" stroke="#475569" stroke-width="1" stroke-dasharray="3"/>
+  <text x="1006" y="1945" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#cbd5e1">External / SDK (dashed border)</text>
+
+  <!-- Arrow types -->
+  <line x1="195" y1="1972" x2="1415" y2="1972" stroke="#1e293b" stroke-width="1"/>
+  <text x="800" y="1993" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Arrow Types</text>
+  <line x1="200" y1="2016" x2="260" y2="2016" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="270" y="2020" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#94a3b8">Data flow (sync)</text>
+  <line x1="440" y1="2016" x2="500" y2="2016" stroke="#475569" stroke-width="1.5" stroke-dasharray="5" marker-end="url(#arrow-dashed)"/>
+  <text x="510" y="2020" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#94a3b8">External / SDK connection</text>
+  <line x1="720" y1="2016" x2="780" y2="2016" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow-bright)"/>
+  <text x="790" y="2020" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#94a3b8">IPC / event push</text>
+  <path d="M 970 2023 Q 1010 2008 1050 2023" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="1063" y="2020" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="11" fill="#94a3b8">Convergent path</text>
+
+  <line x1="195" y1="2042" x2="1415" y2="2042" stroke="#1e293b" stroke-width="1"/>
+  <text x="800" y="2062" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b" text-anchor="middle">Rust Crates: rhema-audio · rhema-stt · rhema-detection · rhema-bible · rhema-broadcast · rhema-api</text>
+  <text x="800" y="2080" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b" text-anchor="middle">Tauri Commands: audio.rs · stt.rs · detection.rs · bible.rs · broadcast.rs · remote.rs</text>
+  <text x="800" y="2098" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b" text-anchor="middle">React Hooks: useAudio · useTranscription · useDetection · useBible · useBroadcast · useRemoteControl</text>
+  <text x="800" y="2116" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#64748b" text-anchor="middle">ML Models: Qwen3 0.6B (ONNX/INT8, ~571 MB) · Whisper (optional local) · Sherpa-ONNX (optional)</text>
+
+  <!-- FOOTER -->
+  <line x1="155" y1="2148" x2="1445" y2="2148" stroke="#1e293b" stroke-width="1"/>
+  <text x="800" y="2171" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="12" fill="#475569" text-anchor="middle">Rhema v2 · Tauri v2 + React 19 · Real-Time AI Bible Detection for Live Sermon Environments</text>
+  <text x="800" y="2191" font-family="'Inter','Segoe UI',system-ui,sans-serif" font-size="10" fill="#334155" text-anchor="middle">com.openbezal.rhemaapp · macOS / Windows · rhema-audio · rhema-stt · rhema-detection · rhema-bible · rhema-broadcast · rhema-api</text>
+
+</svg>

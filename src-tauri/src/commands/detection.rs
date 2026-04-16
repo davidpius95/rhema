@@ -1,4 +1,7 @@
-#![expect(clippy::needless_pass_by_value, reason = "Tauri command extractors require pass-by-value")]
+#![expect(
+    clippy::needless_pass_by_value,
+    reason = "Tauri command extractors require pass-by-value"
+)]
 
 use std::sync::Mutex;
 use tauri::State;
@@ -46,25 +49,58 @@ pub fn to_result(state: &AppState, merged: &MergedDetection) -> DetectionResult 
                 (r, v.text, v.book_name, v.book_number, v.chapter, v.verse)
             } else {
                 let r = format!("{} {}:{}", vr.book_name, vr.chapter, vr.verse_start);
-                (r, String::new(), vr.book_name.clone(), vr.book_number, vr.chapter, vr.verse_start)
+                (
+                    r,
+                    String::new(),
+                    vr.book_name.clone(),
+                    vr.book_number,
+                    vr.chapter,
+                    vr.verse_start,
+                )
             }
         } else if let Some(ref db) = state.bible_db {
             // Direct detection: resolve via book/chapter/verse
             if vr.book_number > 0 && vr.chapter > 0 && vr.verse_start > 0 {
-                if let Ok(Some(v)) = db.get_verse(state.active_translation_id, vr.book_number, vr.chapter, vr.verse_start) {
+                if let Ok(Some(v)) = db.get_verse(
+                    state.active_translation_id,
+                    vr.book_number,
+                    vr.chapter,
+                    vr.verse_start,
+                ) {
                     let r = format!("{} {}:{}", v.book_name, v.chapter, v.verse);
                     (r, v.text, v.book_name, v.book_number, v.chapter, v.verse)
                 } else {
                     let r = format!("{} {}:{}", vr.book_name, vr.chapter, vr.verse_start);
-                    (r, String::new(), vr.book_name.clone(), vr.book_number, vr.chapter, vr.verse_start)
+                    (
+                        r,
+                        String::new(),
+                        vr.book_name.clone(),
+                        vr.book_number,
+                        vr.chapter,
+                        vr.verse_start,
+                    )
                 }
             } else {
                 let r = format!("{} {}:{}", vr.book_name, vr.chapter, vr.verse_start);
-                (r, String::new(), vr.book_name.clone(), vr.book_number, vr.chapter, vr.verse_start)
+                (
+                    r,
+                    String::new(),
+                    vr.book_name.clone(),
+                    vr.book_number,
+                    vr.chapter,
+                    vr.verse_start,
+                )
             }
         } else {
             let r = format!("{} {}:{}", vr.book_name, vr.chapter, vr.verse_start);
-            (r, String::new(), vr.book_name.clone(), vr.book_number, vr.chapter, vr.verse_start)
+            (
+                r,
+                String::new(),
+                vr.book_name.clone(),
+                vr.book_number,
+                vr.chapter,
+                vr.verse_start,
+            )
         };
 
     DetectionResult {
@@ -120,7 +156,10 @@ pub fn toggle_paraphrase_detection(
 }
 
 #[derive(Serialize)]
-#[expect(clippy::struct_excessive_bools, reason = "status flags for UI consumption")]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "status flags for UI consumption"
+)]
 pub struct DetectionStatusResult {
     pub has_direct: bool,
     pub has_semantic: bool,
@@ -175,7 +214,11 @@ pub fn semantic_search(
         .collect();
 
     // Ensure highest similarity is always first
-    results.sort_by(|a, b| b.similarity.partial_cmp(&a.similarity).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.similarity
+            .partial_cmp(&a.similarity)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
     Ok(results)
 }
@@ -263,9 +306,7 @@ pub struct ReadingModeStatus {
 
 /// Stop reading mode
 #[tauri::command]
-pub fn stop_reading_mode(
-    state: State<'_, Mutex<ReadingMode>>,
-) -> Result<(), String> {
+pub fn stop_reading_mode(state: State<'_, Mutex<ReadingMode>>) -> Result<(), String> {
     let mut rm = state.lock().map_err(|e| e.to_string())?;
     rm.deactivate();
     Ok(())

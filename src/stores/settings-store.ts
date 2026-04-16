@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-type SttProvider = "deepgram" | "whisper"
+type SttProvider = "deepgram" | "whisper" | "sherpa"
 
 interface SettingsState {
   deepgramApiKey: string | null

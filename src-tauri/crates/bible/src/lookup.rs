@@ -156,14 +156,13 @@ impl BibleDb {
                 "SELECT v.id, v.book_number, v.book_name, v.chapter, v.verse, v.text \
                  FROM verses v \
                  JOIN translations t ON v.translation_id = t.id \
-                 WHERE t.language = ?1"
+                 WHERE t.language = ?1",
             )?;
             let rows = stmt.query_map([lang], mapper)?;
             Ok(rows.collect::<Result<Vec<_>, _>>()?)
         } else {
-            let mut stmt = conn.prepare(
-                "SELECT id, book_number, book_name, chapter, verse, text FROM verses"
-            )?;
+            let mut stmt = conn
+                .prepare("SELECT id, book_number, book_name, chapter, verse, text FROM verses")?;
             let rows = stmt.query_map([], mapper)?;
             Ok(rows.collect::<Result<Vec<_>, _>>()?)
         }

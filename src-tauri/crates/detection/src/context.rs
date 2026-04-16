@@ -64,7 +64,10 @@ impl SermonContext {
         }
         self.last_update = Some(Instant::now());
 
-        #[expect(clippy::cast_possible_truncation, reason = "timestamp millis won't exceed u64 for centuries")]
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "timestamp millis won't exceed u64 for centuries"
+        )]
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()
@@ -182,7 +185,7 @@ mod tests {
     fn test_same_book_boost() {
         let mut ctx = SermonContext::new();
         ctx.update(&make_ref(45, 8, 28), 0.95, "direct"); // Romans 8:28
-        // Same book (Romans), different chapter
+                                                          // Same book (Romans), different chapter
         assert!((ctx.confidence_boost(45, 3) - SAME_BOOK_BOOST).abs() < f64::EPSILON);
     }
 
@@ -190,7 +193,7 @@ mod tests {
     fn test_same_chapter_boost() {
         let mut ctx = SermonContext::new();
         ctx.update(&make_ref(45, 8, 28), 0.95, "direct"); // Romans 8:28
-        // Same book AND chapter
+                                                          // Same book AND chapter
         assert!((ctx.confidence_boost(45, 8) - SAME_CHAPTER_BOOST).abs() < f64::EPSILON);
     }
 
@@ -198,7 +201,7 @@ mod tests {
     fn test_different_book_no_boost() {
         let mut ctx = SermonContext::new();
         ctx.update(&make_ref(45, 8, 28), 0.95, "direct"); // Romans
-        // Different book (John)
+                                                          // Different book (John)
         assert_eq!(ctx.confidence_boost(43, 3), 0.0);
     }
 
@@ -222,9 +225,9 @@ mod tests {
     #[test]
     fn test_last_in_book() {
         let mut ctx = SermonContext::new();
-        ctx.update(&make_ref(45, 8, 28), 0.95, "direct");  // Romans
-        ctx.update(&make_ref(43, 3, 16), 0.90, "direct");  // John
-        ctx.update(&make_ref(45, 9, 1), 0.85, "direct");   // Romans again
+        ctx.update(&make_ref(45, 8, 28), 0.95, "direct"); // Romans
+        ctx.update(&make_ref(43, 3, 16), 0.90, "direct"); // John
+        ctx.update(&make_ref(45, 9, 1), 0.85, "direct"); // Romans again
 
         let last_romans = ctx.last_in_book(45).unwrap();
         assert_eq!(last_romans.chapter, 9);

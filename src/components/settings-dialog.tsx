@@ -216,7 +216,7 @@ function SpeechSection() {
 
         <RadioGroup
           value={sttProvider}
-          onValueChange={(v) => setSttProvider(v as "deepgram" | "whisper")}
+          onValueChange={(v) => setSttProvider(v as "deepgram" | "whisper" | "sherpa")}
           className="gap-3"
         >
           {/* Deepgram (cloud) */}
@@ -252,6 +252,23 @@ function SpeechSection() {
               <p className="text-[0.625rem] leading-relaxed text-muted-foreground">
                 Runs Whisper large-v3-turbo locally on your device. Fully
                 offline, no API key needed. Audio never leaves your machine.
+              </p>
+            </div>
+          </label>
+
+          {/* Sherpa-ONNX (local streaming) */}
+          <label
+            className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors has-data-[state=checked]:border-primary/50 has-data-[state=checked]:bg-primary/5 has-data-[state=checked]:ring-1 has-data-[state=checked]:ring-primary/20 ${
+              sttProvider !== "sherpa" ? "hover:border-muted-foreground/25" : ""
+            }`}
+          >
+            <RadioGroupItem value="sherpa" className="mt-0.5" />
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-foreground">
+                Local Streaming (Sherpa-ONNX)
+              </span>
+              <p className="text-[0.625rem] leading-relaxed text-muted-foreground">
+                Ultra-fast Zipformer RNN-T model. Streams word-by-word instantly like Deepgram, but fully offline. Zero latency.
               </p>
             </div>
           </label>
