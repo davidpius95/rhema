@@ -44,9 +44,16 @@ jobs:
         with:
             workspaces: './src-tauri -> target'
 
-      - name: Set Windows RUSTFLAGS
+      - name: Set Windows Compiler Flags
         if: matrix.platform == 'windows-latest'
-        run: echo "RUSTFLAGS=-C target-feature=+crt-static" >> $GITHUB_ENV
+        run: |
+          echo "RUSTFLAGS=-C target-feature=+crt-static" >> $GITHUB_ENV
+          echo "CFLAGS=/MT" >> $GITHUB_ENV
+          echo "CXXFLAGS=/MT" >> $GITHUB_ENV
+
+      - name: Set macOS Deployment Target
+        if: matrix.platform == 'macos-latest'
+        run: echo "MACOSX_DEPLOYMENT_TARGET=11.0" >> $GITHUB_ENV
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
