@@ -1,16 +1,10 @@
-pub mod cache;
-<<<<<<< HEAD
-pub mod chunker;
-pub mod cloud;
-pub mod detector;
 pub mod embedder;
-=======
+pub mod index;
+pub mod chunker;
+pub mod cache;
 pub mod detector;
 pub mod synonyms;
->>>>>>> upstream/main
 pub mod ensemble;
-pub mod index;
-pub mod synonyms;
 
 #[cfg(feature = "onnx")]
 pub mod onnx_embedder;

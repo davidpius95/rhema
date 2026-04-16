@@ -164,15 +164,8 @@ impl ReadingMode {
         if !self.verses.is_empty() {
             self.active = true;
             self.last_match_time = Instant::now();
-            let verse = self
-                .verses
-                .get(self.current_index)
-                .map_or(0, |v| v.verse_number);
-            log::info!(
-                "[READING] Resumed at: {} {}:{verse}",
-                self.book_name,
-                self.chapter
-            );
+            let verse = self.verses.get(self.current_index).map_or(0, |v| v.verse_number);
+            log::info!("[READING] Resumed at: {} {}:{verse}", self.book_name, self.chapter);
         }
     }
 
@@ -359,7 +352,9 @@ impl ReadingMode {
 
         // Check timeout — but don't clear verses, just pause.
         // This allows "verse N" references to re-activate.
-        if self.last_match_time.elapsed().as_millis() > READING_MODE_TIMEOUT_MS && self.active {
+        if self.last_match_time.elapsed().as_millis() > READING_MODE_TIMEOUT_MS
+            && self.active
+        {
             log::info!("[READING] Timeout — pausing (toggle still on, verses retained)");
             self.active = false;
         }
@@ -393,8 +388,7 @@ impl ReadingMode {
                 let next_idx = self.current_index + 1;
                 if next_idx < self.verses.len() {
                     let next = &self.verses[next_idx];
-                    let next_overlap =
-                        word_overlap(&transcript_words, &next.words, next.word_count);
+                    let next_overlap = word_overlap(&transcript_words, &next.words, next.word_count);
 
                     // If transcript also matches next verse, advance
                     if next_overlap >= MIN_WORD_OVERLAP {
@@ -459,11 +453,8 @@ impl ReadingMode {
         }
 
         // Check for "next" / "next verse" command
-        if trimmed == "next"
-            || trimmed == "next."
-            || trimmed == "next verse"
-            || trimmed == "next verse."
-        {
+        if trimmed == "next" || trimmed == "next." || trimmed == "next verse"
+            || trimmed == "next verse." {
             let next_idx = self.current_index + 1;
             if next_idx < self.verses.len() {
                 log::info!("[READING] 'Next' command detected");
@@ -473,11 +464,8 @@ impl ReadingMode {
         }
 
         // Check for "previous" / "go back" command
-        if trimmed == "previous verse"
-            || trimmed == "previous verse."
-            || trimmed == "go back"
-            || trimmed == "go back."
-        {
+        if trimmed == "previous verse" || trimmed == "previous verse."
+            || trimmed == "go back" || trimmed == "go back." {
             if self.current_index > 0 {
                 let prev_idx = self.current_index - 1;
                 log::info!("[READING] 'Previous' command detected");
@@ -578,10 +566,7 @@ fn extract_verse_number(text: &str) -> Option<i32> {
 fn parse_number_token(text: &str) -> Option<i32> {
     let trimmed = text.trim_end_matches(['.', ',', '?', '!']);
     // Try digit
-    let token: String = trimmed
-        .chars()
-        .take_while(|c| c.is_alphanumeric())
-        .collect();
+    let token: String = trimmed.chars().take_while(|c| c.is_alphanumeric()).collect();
     if let Ok(n) = token.parse::<i32>() {
         if n > 0 && n <= 176 {
             return Some(n);
@@ -702,13 +687,8 @@ fn word_overlap(
         return 0.0;
     }
     let matches = verse_words.intersection(transcript_words).count();
-    #[expect(
-        clippy::cast_precision_loss,
-        reason = "word counts are small enough for f64 precision"
-    )]
-    {
-        matches as f64 / verse_word_count as f64
-    }
+    #[expect(clippy::cast_precision_loss, reason = "word counts are small enough for f64 precision")]
+    { matches as f64 / verse_word_count as f64 }
 }
 
 #[cfg(test)]
@@ -839,8 +819,9 @@ mod tests {
     #[test]
     fn test_start_positions_cursor_at_start_verse() {
         let mut rm = ReadingMode::new();
-        let verses: Vec<(i32, String)> =
-            (1..=31).map(|i| (i, format!("Verse {i} text."))).collect();
+        let verses: Vec<(i32, String)> = (1..=31)
+            .map(|i| (i, format!("Verse {i} text.")))
+            .collect();
 
         rm.start(44, "Acts", 15, 28, verses);
         assert_eq!(rm.current_verse(), Some(28));
@@ -851,13 +832,7 @@ mod tests {
     #[test]
     fn test_chapter_command_detected() {
         let mut rm = ReadingMode::new();
-        rm.start(
-            1,
-            "Genesis",
-            5,
-            1,
-            vec![(1, "In the beginning.".to_string())],
-        );
+        rm.start(1, "Genesis", 5, 1, vec![(1, "In the beginning.".to_string())]);
 
         let result = rm.check_chapter_command("let's go to chapter seven");
         assert_eq!(
@@ -927,16 +902,6 @@ mod tests {
     }
 
     #[test]
-<<<<<<< HEAD
-    fn test_extract_chapter_number() {
-        assert_eq!(extract_chapter_number("chapter seven"), Some(7));
-        assert_eq!(extract_chapter_number("chapter 8"), Some(8));
-        assert_eq!(
-            extract_chapter_number("let's go to chapter twelve"),
-            Some(12)
-        );
-        assert_eq!(extract_chapter_number("hello world"), None);
-=======
     fn test_chapter_verse_command() {
         let mut rm = ReadingMode::new();
         rm.start(1, "Genesis", 1, 1, vec![(1, "In the beginning.".to_string())]);
@@ -1077,6 +1042,5 @@ mod tests {
 
         // Context should be reset to None after full reference
         // Next bare number should be handled by verse navigation
->>>>>>> upstream/main
     }
 }

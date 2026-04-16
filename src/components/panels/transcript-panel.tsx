@@ -3,14 +3,10 @@ import { PanelHeader } from "@/components/ui/panel-header"
 import { LevelMeter } from "@/components/ui/level-meter"
 import { Button } from "@/components/ui/button"
 import { ApiKeyPrompt } from "@/components/ui/api-key-prompt"
-<<<<<<< HEAD
 import { MicIcon, MicOffIcon, DownloadIcon, Trash2Icon } from "lucide-react"
 import { invoke } from "@tauri-apps/api/core"
 import { save } from "@tauri-apps/plugin-dialog"
 import { writeTextFile } from "@tauri-apps/plugin-fs"
-=======
-import { MicIcon, MicOffIcon } from "lucide-react"
->>>>>>> upstream/main
 import {
   useAudioStore,
   useDetectionStore,
@@ -87,11 +83,7 @@ export function TranscriptPanel() {
 
     // Auto-navigate book search + select verse for preview/live
     const directHit = detections.find(
-<<<<<<< HEAD
-      (d) => d.source === "direct" || (d.source as string) === "contextual" || ((d.source as string) === "quotation" && d.auto_queued)
-=======
       (d) => d.source === "direct" && !d.is_chapter_only
->>>>>>> upstream/main
     )
     if (directHit && directHit.book_number > 0) {
       // Select verse immediately so preview/live panels update

@@ -19,9 +19,8 @@ futures-util = "0.3"
 crossbeam-channel = "0.5"
 async-trait = "0.1"
 
-# STT engines (optional)
+# Whisper local STT (optional)
 rhema-audio = { path = "../audio", optional = true }
-sherpa-rs = { version = "0.6.8", optional = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 whisper-rs = { version = "0.16", features = ["metal"], optional = true }
@@ -33,4 +32,3 @@ whisper-rs = { version = "0.16", optional = true }
 default = ["rest-fallback"]
 rest-fallback = ["reqwest"]
 whisper = ["dep:whisper-rs", "rhema-audio"]
-sherpa = ["dep:sherpa-rs", "rhema-audio"]

@@ -27,9 +27,6 @@ pub mod types;
 #[cfg(feature = "whisper")]
 pub mod whisper;
 
-#[cfg(feature = "sherpa")]
-pub mod sherpa;
-
 pub use deepgram::DeepgramClient;
 pub use error::SttError;
 pub use keyterms::bible_keyterms;
@@ -38,6 +35,3 @@ pub use types::{SttConfig, TranscriptEvent, Word};
 
 #[cfg(feature = "whisper")]
 pub use whisper::WhisperProvider;
-
-#[cfg(feature = "sherpa")]
-pub use sherpa::SherpaProvider;

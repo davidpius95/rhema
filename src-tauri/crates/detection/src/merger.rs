@@ -92,17 +92,15 @@ impl DetectionMerger {
         // 5 & 6. Build merged list with auto-queue decisions
         let now = Instant::now();
         let cooldown_ok = match self.last_auto_display {
-            #[expect(
-                clippy::cast_possible_truncation,
-                reason = "cooldown millis won't exceed u64"
-            )]
+            #[expect(clippy::cast_possible_truncation, reason = "cooldown millis won't exceed u64")]
             Some(last) => now.duration_since(last).as_millis() as u64 >= self.cooldown_ms,
             None => true,
         };
 
         let mut results = Vec::with_capacity(all.len());
         for detection in all {
-            let auto_queued = detection.confidence >= self.auto_queue_threshold && cooldown_ok;
+            let auto_queued =
+                detection.confidence >= self.auto_queue_threshold && cooldown_ok;
             if auto_queued {
                 self.last_auto_display = Some(now);
             }
@@ -115,26 +113,6 @@ impl DetectionMerger {
         results
     }
 
-<<<<<<< HEAD
-    /// Apply context boosting to a list of detections.
-    ///
-    /// Boosts confidence for detections in the same book/chapter as
-    /// the current sermon context. Call this BEFORE `merge()`.
-    pub fn apply_context_boost(
-        detections: &mut [Detection],
-        context: &crate::context::SermonContext,
-    ) {
-        for detection in detections.iter_mut() {
-            let boost = context
-                .confidence_boost(detection.verse_ref.book_number, detection.verse_ref.chapter);
-            if boost > 0.0 {
-                detection.confidence = (detection.confidence + boost).min(1.0);
-            }
-        }
-    }
-
-=======
->>>>>>> upstream/main
     /// Update the minimum confidence threshold.
     pub fn set_confidence_threshold(&mut self, threshold: f64) {
         self.confidence_threshold = threshold;
