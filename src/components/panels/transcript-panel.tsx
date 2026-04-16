@@ -4,7 +4,6 @@ import { LevelMeter } from "@/components/ui/level-meter"
 import { Button } from "@/components/ui/button"
 import { ApiKeyPrompt } from "@/components/ui/api-key-prompt"
 import { MicIcon, MicOffIcon } from "lucide-react"
-import { invoke } from "@tauri-apps/api/core"
 import {
   useAudioStore,
   useDetectionStore,
