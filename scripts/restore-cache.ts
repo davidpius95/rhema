@@ -29,12 +29,19 @@ async function syncDir(source: string, target: string, name: string) {
     console.log(`  ⚠ Cache empty for ${name}`);
     return;
   }
-  
+
   await mkdir(target, { recursive: true });
-  
-  // Recursively copy contents
-  await cp(source, target, { recursive: true });
-  console.log(`  ✓ Restored ${name} to ${target}`);
+
+  // Copy each entry individually so we copy CONTENTS into target,
+  // not the source folder itself (avoids data/sources/bibles/AMP.json nesting)
+  let copied = 0;
+  for (const entry of entries) {
+    const srcPath = join(source, entry);
+    const dstPath = join(target, entry);
+    await cp(srcPath, dstPath, { recursive: true });
+    copied++;
+  }
+  console.log(`  ✓ Restored ${name} → ${target} (${copied} files)`);
 }
 
 async function main() {
