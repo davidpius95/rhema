@@ -62,18 +62,10 @@ jobs:
       # ── Prepare ALL runtime resources BEFORE the Tauri build ─────────────
       # These are bundled into the final installer via tauri.conf.json resources.
 
-      # Phase 1: Public domain Bible translations (KJV, Spanish, French, Portuguese)
-      - name: Download open-source Bible data
-        run: bun run download:bible-data
-
-      # Phase 2: Copyrighted Bible translations from BibleGateway
-      #   NIV, ESV, NASB, NKJV, NLT, AMP — scraped book-by-book
-      - name: Install Python Bible scraper dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install meaningless
-      - name: Download copyrighted Bible translations (NIV, ESV, NASB, NKJV, NLT, AMP)
-        run: python3 data/download-biblegateway.py
+      # Phase 1: Restore Bible translations from the internal Git fallback cache
+      # This skips BibleGateway web-scraping to prevent GitHub Actions IP blocks!
+      - name: Load offline Bible cache
+        run: bun run scripts/restore-cache.ts
 
       # Phase 3: Build database with ALL translations
       - name: Build Bible SQLite database (all translations)
