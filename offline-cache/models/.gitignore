@@ -1,0 +1,6 @@
+# Ignore massive mathematical model binaries to protect git repo capacity
+# Only .md files or scripts are permitted in the models cache cache structurally.
+*.bin
+*.onnx
+*.json
+!README.md

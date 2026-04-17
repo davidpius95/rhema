@@ -152,6 +152,20 @@ bun run tauri build
 | **macOS** | Universal (Apple Silicon + Intel) | `.dmg` | Single binary for M1/M2/M3/M4 and Intel Macs. Requires macOS 11.0+ |
 | **Windows** | x64 | `.msi` | 64-bit installer for Windows 10/11. Includes WebView2 bootstrapper |
 
+### Native Offline Seeding / Air-gapped Builds
+
+Rhema supports an internal fallback cache designed for enterprise or restrictive network environments where internet scraping or remote model downloads are blocked.
+
+1. **Populate the Models Cache**
+   Download the ONNX models (`Qwen3...`) and the Whisper model via a USB drive on an internet-connected machine. Paste the raw binaries inside `offline-cache/models/whisper/`, `offline-cache/models/qwen3-embedding-0.6b/`, and `offline-cache/models/qwen3-embedding-0.6b-int8/`. Note: Binaries inside this folder are explicitly `.gitignore`'d so they will never accidentally push to Git.
+   *(All text Bible translations are already firmly committed to `offline-cache/bibles/` and require no configuration).*
+
+2. **Trigger the Offline Pipeline**
+   ```bash
+   bun run setup:offline
+   ```
+   This command internally synchronizes the offline backups into the active production hierarchy. `setup:all` automatically bypasses web-scrapers internally when files are detected, guaranteeing zero API interactions.
+
 ### What Ships in the Installer
 
 The CI pipeline automatically downloads and bundles these resources:
