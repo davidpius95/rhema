@@ -11,11 +11,13 @@ export function SummaryModal({ open, onOpenChange }: { open: boolean; onOpenChan
   const [copied, setCopied] = useState(false)
 
   const handleGenerate = async () => {
-    const openaiApiKey = useSettingsStore.getState().openaiApiKey
-    if (!openaiApiKey) {
-      setError("Please add an OpenAI API Key in Settings to use this feature.")
-      return
-    }
+    const { 
+      summaryAiProvider, 
+      openaiApiKey, 
+      claudeApiKey, 
+      localAiBaseUrl, 
+      localAiModel 
+    } = useSettingsStore.getState()
 
     const segments = useTranscriptStore.getState().segments
     if (segments.length === 0) {
@@ -31,34 +33,83 @@ export function SummaryModal({ open, onOpenChange }: { open: boolean; onOpenChan
     setCopied(false)
 
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${openaiApiKey}`
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini", // fast and cheap
-          messages: [
-            {
-              role: "system",
-              content: "You are an expert sermon note-taker. Here is the raw transcript from a live session. First, write a 2-3 paragraph detailed summary of the speaker's core message. Second, extract the most important key points formatted into a numbered list of bite-sized highlights perfectly tailored for posting on social media like Twitter and Instagram."
-            },
-            {
-              role: "user",
-              content: `Here is the transcript to summarize and extract points from:\n\n${transcript}`
-            }
-          ],
-          temperature: 0.7
-        })
-      })
+      const systemPrompt = "You are an expert sermon note-taker. Here is the raw transcript from a live session. First, write a 2-3 paragraph detailed summary of the speaker's core message. Second, extract the most important key points formatted into a numbered list of bite-sized highlights perfectly tailored for posting on social media like Twitter and Instagram."
+      const userPrompt = `Here is the transcript to summarize and extract points from:\n\n${transcript}`
 
-      if (!response.ok) {
-        throw new Error("Failed to generate summary. Please check your API key.")
+      let content = ""
+
+      if (summaryAiProvider === "openai") {
+        if (!openaiApiKey) throw new Error("Please add an OpenAI API Key in Settings to use this feature.")
+        
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${openaiApiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            temperature: 0.7
+          })
+        })
+
+        if (!response.ok) throw new Error("Failed to generate summary with OpenAI. Please check your API key.")
+        const data = await response.json()
+        content = data.choices[0].message.content
+      } else if (summaryAiProvider === "claude") {
+        if (!claudeApiKey) throw new Error("Please add an Anthropic API Key in Settings to use this feature.")
+        
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": claudeApiKey,
+            "anthropic-version": "2023-06-01",
+            "anthropic-dangerously-allow-custom-urls-for-cors": "true"
+          },
+          body: JSON.stringify({
+            model: "claude-3-haiku-20240307",
+            max_tokens: 1024,
+            system: systemPrompt,
+            messages: [
+              { role: "user", content: userPrompt }
+            ],
+            temperature: 0.7
+          })
+        })
+
+        if (!response.ok) throw new Error("Failed to generate summary with Claude. Please check your API key and ensure CORS is permitted if running in browser.")
+        const data = await response.json()
+        content = data.content[0].text
+      } else if (summaryAiProvider === "local") {
+        const baseUrl = localAiBaseUrl || "http://localhost:11434/v1"
+        const model = localAiModel || "llama3"
+
+        const response = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt }
+            ],
+            temperature: 0.7
+          })
+        })
+
+        if (!response.ok) throw new Error(`Failed to connect to local AI at ${baseUrl}. Ensure your server is running and CORS is configured.`)
+        const data = await response.json()
+        content = data.choices[0].message.content
       }
 
-      const data = await response.json()
-      setResult(data.choices[0].message.content)
+      setResult(content)
     } catch (e) {
       setError(String(e))
     } finally {

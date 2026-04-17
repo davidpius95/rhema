@@ -3,10 +3,16 @@ import { load, type Store } from "@tauri-apps/plugin-store"
 
 type SttProvider = "deepgram" | "whisper" | "sherpa"
 
+type SummaryAiProvider = "openai" | "claude" | "local"
+
 interface SettingsState {
   deepgramApiKey: string | null
   openaiApiKey: string | null
   claudeApiKey: string | null
+  localAiBaseUrl: string | null
+  localAiModel: string | null
+  summaryAiProvider: SummaryAiProvider
+
   audioDeviceId: string | null
   gain: number
   autoMode: boolean
@@ -18,6 +24,10 @@ interface SettingsState {
   setDeepgramApiKey: (key: string | null) => void
   setOpenaiApiKey: (key: string | null) => void
   setClaudeApiKey: (key: string | null) => void
+  setLocalAiBaseUrl: (url: string | null) => void
+  setLocalAiModel: (model: string | null) => void
+  setSummaryAiProvider: (provider: SummaryAiProvider) => void
+
   setAudioDeviceId: (id: string | null) => void
   setGain: (gain: number) => void
   setAutoMode: (auto: boolean) => void
@@ -31,6 +41,10 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   deepgramApiKey: null,
   openaiApiKey: null,
   claudeApiKey: null,
+  localAiBaseUrl: "http://localhost:11434/v1", // Default Ollama
+  localAiModel: "llama3", // Default Ollama model
+  summaryAiProvider: "openai",
+
   audioDeviceId: null,
   gain: 1.0,
   autoMode: false,
@@ -42,6 +56,10 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setDeepgramApiKey: (deepgramApiKey) => set({ deepgramApiKey }),
   setOpenaiApiKey: (openaiApiKey) => set({ openaiApiKey }),
   setClaudeApiKey: (claudeApiKey) => set({ claudeApiKey }),
+  setLocalAiBaseUrl: (localAiBaseUrl) => set({ localAiBaseUrl }),
+  setLocalAiModel: (localAiModel) => set({ localAiModel }),
+  setSummaryAiProvider: (summaryAiProvider) => set({ summaryAiProvider }),
+
   setAudioDeviceId: (audioDeviceId) => set({ audioDeviceId }),
   setGain: (gain) => set({ gain }),
   setAutoMode: (autoMode) => set({ autoMode }),
@@ -55,6 +73,9 @@ const PERSISTED_KEYS = [
   "deepgramApiKey",
   "openaiApiKey",
   "claudeApiKey",
+  "localAiBaseUrl",
+  "localAiModel",
+  "summaryAiProvider",
   "audioDeviceId",
   "gain",
   "autoMode",

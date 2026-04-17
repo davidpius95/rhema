@@ -413,32 +413,137 @@ function DisplayModeSection() {
 /* -------------------------------------------------------------------------- */
 
 function ApiKeysSection() {
-  const { deepgramApiKey, sttProvider } = useSettingsStore()
+  const { 
+    deepgramApiKey, 
+    sttProvider,
+    openaiApiKey, setOpenaiApiKey,
+    claudeApiKey, setClaudeApiKey,
+    localAiBaseUrl, setLocalAiBaseUrl,
+    localAiModel, setLocalAiModel,
+    summaryAiProvider, setSummaryAiProvider,
+  } = useSettingsStore()
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Deepgram key status (configured in Speech Recognition section) */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-8">
+      {/* Summary AI Configuration */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <h3 className="text-sm font-semibold">Generative AI Configuration</h3>
+          <p className="text-[0.625rem] text-muted-foreground mt-1">
+            Configure the AI provider used for summarizing sermons and generating social media highlights.
+          </p>
+        </div>
+
+        {/* Provider selector */}
+        <div className="flex flex-col gap-3">
           <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Deepgram API Key
+            Summary Provider
           </label>
-          {deepgramApiKey ? (
-            <Badge variant="outline" className="text-[0.5rem]">
-              Key configured
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="text-[0.5rem] text-muted-foreground">
-              Not set
-            </Badge>
+          <RadioGroup
+            value={summaryAiProvider}
+            onValueChange={(v) => setSummaryAiProvider(v as any)}
+            className="grid grid-cols-3 gap-3"
+          >
+            <label className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-3 items-center justify-center text-center transition-colors has-data-[state=checked]:border-primary/50 has-data-[state=checked]:bg-primary/5 ${summaryAiProvider !== "openai" ? "hover:border-muted-foreground/25" : ""}`}>
+              <RadioGroupItem value="openai" className="sr-only" />
+              <span className="text-xs font-medium">OpenAI</span>
+            </label>
+            <label className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-3 items-center justify-center text-center transition-colors has-data-[state=checked]:border-primary/50 has-data-[state=checked]:bg-primary/5 ${summaryAiProvider !== "claude" ? "hover:border-muted-foreground/25" : ""}`}>
+              <RadioGroupItem value="claude" className="sr-only" />
+              <span className="text-xs font-medium">Claude</span>
+            </label>
+            <label className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-3 items-center justify-center text-center transition-colors has-data-[state=checked]:border-primary/50 has-data-[state=checked]:bg-primary/5 ${summaryAiProvider !== "local" ? "hover:border-muted-foreground/25" : ""}`}>
+              <RadioGroupItem value="local" className="sr-only" />
+              <span className="text-xs font-medium">Local AI</span>
+            </label>
+          </RadioGroup>
+        </div>
+
+        {/* Input fields based on selected provider */}
+        <div className="flex flex-col gap-3 p-4 bg-muted/30 rounded-lg border border-border">
+          {summaryAiProvider === "openai" && (
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium tracking-wider text-muted-foreground">OpenAI API Key</label>
+              <Input
+                type="password"
+                placeholder="sk-..."
+                value={openaiApiKey ?? ""}
+                onChange={(e) => setOpenaiApiKey(e.target.value)}
+                className="text-xs"
+              />
+              <p className="text-[0.625rem] text-muted-foreground">Models used: gpt-4o-mini. Get a key from platform.openai.com.</p>
+            </div>
+          )}
+
+          {summaryAiProvider === "claude" && (
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium tracking-wider text-muted-foreground">Anthropic API Key</label>
+              <Input
+                type="password"
+                placeholder="sk-ant-..."
+                value={claudeApiKey ?? ""}
+                onChange={(e) => setClaudeApiKey(e.target.value)}
+                className="text-xs"
+              />
+              <p className="text-[0.625rem] text-muted-foreground">Models used: claude-3-haiku. Get a key from console.anthropic.com.</p>
+            </div>
+          )}
+
+          {summaryAiProvider === "local" && (
+            <>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-medium tracking-wider text-muted-foreground">Local API Base URL (OpenAI-compatible)</label>
+                <Input
+                  type="text"
+                  placeholder="http://localhost:11434/v1"
+                  value={localAiBaseUrl ?? ""}
+                  onChange={(e) => setLocalAiBaseUrl(e.target.value)}
+                  className="text-xs"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-medium tracking-wider text-muted-foreground">Model Name</label>
+                <Input
+                  type="text"
+                  placeholder="llama3"
+                  value={localAiModel ?? ""}
+                  onChange={(e) => setLocalAiModel(e.target.value)}
+                  className="text-xs"
+                />
+                <p className="text-[0.625rem] text-muted-foreground">Must be running an OpenAI-compatible server (like Ollama or LMStudio).</p>
+              </div>
+            </>
           )}
         </div>
-        <p className="text-[0.625rem] text-muted-foreground">
-          {sttProvider === "whisper"
-            ? "Not required when using local Whisper. "
-            : "Required for cloud transcription. "}
-          Configure in the Speech Recognition section.
-        </p>
+      </div>
+
+      <div className="h-px bg-border w-full" />
+
+      {/* Cloud STT Configuration */}
+      <div>
+        <h3 className="text-sm font-semibold mb-4">Cloud Speech Recognition</h3>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              Deepgram API Key
+            </label>
+            {deepgramApiKey ? (
+              <Badge variant="outline" className="text-[0.5rem]">
+                Key configured
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-[0.5rem] text-muted-foreground">
+                Not set
+              </Badge>
+            )}
+          </div>
+          <p className="text-[0.625rem] text-muted-foreground">
+            {sttProvider === "whisper" || sttProvider === "sherpa"
+              ? "Not required when using local STT modes. "
+              : "Required for cloud transcription. "}
+            Configure the actual key in the Speech Recognition section.
+          </p>
+        </div>
       </div>
     </div>
   )
