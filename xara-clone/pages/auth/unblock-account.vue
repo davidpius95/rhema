@@ -1,7 +1,7 @@
 <script setup>
 useHead({
-  title: "Xara - Your Personal AI Financial Assistant on WhatsApp",
-  meta: [{ name: "description", content: "Unlock smarter financial choices with Xara, your AI-powered assistant on WhatsApp, making every transaction simpler and more intuitive." }],
+  title: "GuildPay - Your Personal AI Financial Assistant on WhatsApp",
+  meta: [{ name: "description", content: "Unlock smarter financial choices with GuildPay, your AI-powered assistant on WhatsApp, making every transaction simpler and more intuitive." }],
 })
 
 const phone = ref('')

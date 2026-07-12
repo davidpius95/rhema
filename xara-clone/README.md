@@ -1,6 +1,6 @@
-# Xara site clone
+# GuildPay site clone
 
-A pixel-faithful, editable rebuild of the Xara marketing site (usexara.ai) as a
+A pixel-faithful, editable rebuild of the GuildPay marketing site (useguildpay.ai) as a
 Nuxt 3 application. The original is a Nuxt/Vue SSR site; this project reproduces
 every public page, all assets, and the interactive behaviors as maintainable
 source code rather than a static scrape.
@@ -56,7 +56,7 @@ node .output/server/index.mjs
 
 ## Notes on backend-dependent flows
 
-The account block/unblock and ambassador-application forms POST to Xara's
+The account block/unblock and ambassador-application forms POST to GuildPay's
 server-side API, which is not part of the public site bundle. The forms include
 full client-side validation and are wired to call an endpoint when
 `NUXT_PUBLIC_API_BASE` is set; without it they show a clear demo-mode message

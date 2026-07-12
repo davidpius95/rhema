@@ -19,7 +19,7 @@ const images = [
         <div v-for="(img, i) in images" :key="`${copy}-${i}`" class="mx-3 grid gap-2 shrink-0">
           <img
             :src="img"
-            :alt="`Xara Ambassador ${i + 1}`"
+            :alt="`GuildPay Ambassador ${i + 1}`"
             :loading="i < 3 ? 'eager' : 'lazy'"
             width="300"
             height="500"

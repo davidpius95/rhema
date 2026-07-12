@@ -12,7 +12,7 @@ const benefits = [
     icon: 'arrow-right-up',
   },
   {
-    title: 'Official Xara merch',
+    title: 'Official GuildPay merch',
     description: 'Get access to branded T-shirts, bags, caps, journals, wristbands reserved for verified ambassadors.',
     iconBg: '#EC4899',
     bgColor: '#FCE7F3',
@@ -27,7 +27,7 @@ const benefits = [
   },
   {
     title: 'Paid internships opportunities',
-    description: 'Top performers may be offered internships, or contract roles in Xara or partner teams.',
+    description: 'Top performers may be offered internships, or contract roles in GuildPay or partner teams.',
     iconBg: '#10B981',
     bgColor: '#D1FAE5',
     icon: 'briefcase',
@@ -81,7 +81,7 @@ onBeforeUnmount(stopAutoplay)
           What is in it for you
         </h2>
         <p class="text-[#525866] text-base md:text-lg max-w-2xl px-3 md:px-0 mx-auto">
-          Discover the rewards, opportunities, and real benefits you unlock as a Xara Ambassador.
+          Discover the rewards, opportunities, and real benefits you unlock as a GuildPay Ambassador.
         </p>
       </div>
       <div class="relative overflow-hidden">
